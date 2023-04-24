@@ -12,7 +12,7 @@ import java.net.InetSocketAddress;
  * handle multiple clients. The server will serve clients data from
  * the database and also update the database data.
  */
-public class ServerManager {
+public class ServerManager{
     private ServerSocket serversocket;
 
     /**
@@ -46,6 +46,7 @@ public class ServerManager {
             catch (IOException e) {
                 // will occur when waiting for connection from serversocket.accept()
                 e.printStackTrace();
+                break;
             }
         }
     }
