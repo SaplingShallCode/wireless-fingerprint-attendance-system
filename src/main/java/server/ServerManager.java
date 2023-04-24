@@ -1,27 +1,22 @@
 package server;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.InetSocketAddress;
 
-
 /**
- * The ServerManager class will handle communication with all clients.
- * These clients must be fingerprint scanners. The server will serve
- * clients data from the database and also update the database data.
- * The server should handle multiple clients therefore it must
- * implement the Runnable interface.
+ * The ServerManager class will listen for clients trying to connect.
+ * These clients are be fingerprint scanners. The server is able to
+ * handle multiple clients. The server will serve clients data from
+ * the database and also update the database data.
  */
-public class ServerManager implements Runnable{
+public class ServerManager {
     private ServerSocket serversocket;
 
-    /**@param hostname the fixed host name.
+    /**
+     * @param hostname the fixed host name.
      * @param port the fixed port number.
      * @exception IOException error when opening the socket.
      */
@@ -31,47 +26,39 @@ public class ServerManager implements Runnable{
         serversocket.bind(address);
     }
 
-
     /**
-     * */
-    @Override
-    public void run() {
+     * Run the server.
+     */
+    public void runServer() {
         while (true) {
             try {
                 System.out.println("[info] Waiting for a connection on port " + serversocket.getLocalPort());
-                // next line blocks current thread while waiting for a client to connect.
-                Socket server = serversocket.accept();
-                System.out.println("[info] just connected to client: " + server.getRemoteSocketAddress());
+                // blocks current thread while waiting for a client to connect.
+                Socket client = serversocket.accept();
+
                 /* TODO: create a table in the database for fingerprint scanner clients. will be used for
-                *   client verification. */
+                 *   client verification. */
 
-                // connect input and output streams for communication and send feedback to the client
-                BufferedReader input = new BufferedReader(
-                        new InputStreamReader(server.getInputStream())
-                );
-                BufferedWriter output = new BufferedWriter(
-                        new OutputStreamWriter(server.getOutputStream())
-                );
-                output.write("[server] You are connected to " + server.getLocalSocketAddress());
-                output.newLine();
-                output.flush();
-
-                /* TODO: create a main loop. the main loop will listen for data from the client.*/
-                while (true) {
-                    break;
-                }
-
-                System.out.println("[info] closing server...");
-                input.close();
-                output.close();
-                server.close();
-
+                // create a thread for the connected client and run the thread.
+                ClientHandler client_handler = new ClientHandler(client);
+                new Thread(client_handler).start();
             }
             catch (IOException e) {
                 // will occur when waiting for connection from serversocket.accept()
                 e.printStackTrace();
-                break;
             }
+        }
+    }
+
+    /**
+     * Close the server.
+     */
+    public void stopServer() {
+        try {
+            serversocket.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
