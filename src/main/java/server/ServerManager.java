@@ -28,16 +28,9 @@ public class ServerManager implements Runnable{
         serversocket.bind(address);
     }
 
+
     @Override
     public void run() {
-        runServer();
-    }
-
-
-    /**
-     * Run the server.
-     */
-    public void runServer() {
         isRunning = true;
         while (isRunning) {
             try {
