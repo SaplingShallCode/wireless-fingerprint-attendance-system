@@ -10,7 +10,7 @@ import java.sql.Statement;
  * The DatabaseManager class will handle the database communication and
  * execution of any SQL script.
  */
-public class DatabaseHandler {
+public class DatabaseManager {
     private static final String DB_USERNAME;
     private static final String DB_PASSWORD;
     private Statement statement = null;
