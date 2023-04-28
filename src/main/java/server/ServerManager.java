@@ -131,7 +131,7 @@ public class ServerManager implements Runnable{
         /**
          * Disconnect the client from the server.
          */
-        public void disconnect() {
+        private void disconnect() {
             isConnected = false;
         }
 
