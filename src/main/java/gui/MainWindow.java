@@ -210,6 +210,7 @@ public class MainWindow extends Application {
             Scene scene = new Scene(root); // set the main layout of the scene.
             login_stage.setWidth(GuiConstants.LoginWindowSizes.PRIMARY_WIDTH.getValue());
             login_stage.setHeight(GuiConstants.LoginWindowSizes.PRIMARY_HEIGHT.getValue());
+            login_stage.setTitle(GuiConstants.StringValues.LOGIN_WINDOW_TITLE.getValue());
             login_stage.setScene(scene); // set the main scene.
         }
 

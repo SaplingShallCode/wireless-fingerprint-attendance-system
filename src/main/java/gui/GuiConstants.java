@@ -22,7 +22,9 @@ public class GuiConstants {
 
     public enum StringValues {
         WINDOW_TITLE("Wireless Fingerprint-based Attendance Logger Server by NameGroup"),
+        LOGIN_WINDOW_TITLE("Bind server host and port to..."),
         STYLESHEET_PATH("css/styles.css");
+
 
         private final String value;
         StringValues(String value) {
