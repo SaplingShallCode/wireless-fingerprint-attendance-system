@@ -1,5 +1,6 @@
 package gui;
 
+import javafx.scene.layout.BorderPane;
 import server.Commands;
 import server.ServerManager;
 import javafx.application.Application;
@@ -33,7 +34,8 @@ public class MainWindow extends Application {
     private enum WindowVariables {
         MIN_HEIGHT(600),
         MIN_WIDTH(800),
-        WINDOW_TITLE("Wireless Fingerprint-based Attendance Logger Server by NameGroup");
+        WINDOW_TITLE("Wireless Fingerprint-based Attendance Logger Server by NameGroup"),
+        STYLESHEET_PATH("css/styles.css");
 
         private int value;
         private String text;
@@ -105,11 +107,11 @@ public class MainWindow extends Application {
 
     private void initUI() {
         // ----- Layout ----- //
-        HBox root = new HBox();
+        BorderPane root = new BorderPane();
 
         // ----- Column 1 ----- //
         VBox col1 = new VBox();
-        root.getChildren().add(col1);
+        root.setLeft(col1);
         Label commands_listlabel = new Label("List of available commands:");
         ListView<String> commands_listview = new ListView<>(commands_list);
         commands_listview.setFocusTraversable(false);
@@ -126,7 +128,7 @@ public class MainWindow extends Application {
 
         // ----- Column 2 ----- //
         VBox col2 = new VBox();
-        root.getChildren().add(col2);
+        root.setCenter(col2);
 
         Label log_label = new Label("Console");
         TextArea log_view = new TextArea();
@@ -159,6 +161,7 @@ public class MainWindow extends Application {
 
         // ----- Stage and Scene ----- //
         Scene scene = new Scene(root);
+        scene.getStylesheets().add(WindowVariables.STYLESHEET_PATH.getText());
         command_field.requestFocus();
         primary_stage.setHeight(WindowVariables.MIN_HEIGHT.getValue());
         primary_stage.setWidth(WindowVariables.MIN_WIDTH.getValue());
