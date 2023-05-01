@@ -28,45 +28,6 @@ public class MainWindow extends Application {
 
 
     /**
-     * The WindowVariables are a collection of constants that will be used
-     * by the MainWindow class.
-     */
-    private enum WindowConstants {
-        MIN_HEIGHT(600),
-        MIN_WIDTH(800),
-        WINDOW_TITLE("Wireless Fingerprint-based Attendance Logger Server by NameGroup"),
-        STYLESHEET_PATH("css/styles.css");
-
-        private int value;
-        private String text;
-
-        /**
-         * Overloaded constructor for Integer type.
-         * @param value Integer value.
-         */
-        WindowConstants(int value) {
-            this.value = value;
-        }
-
-        /**
-         * Overloaded constructor for String type.
-         * @param text String value.
-         */
-        WindowConstants(String text) {
-            this.text = text;
-        }
-
-        public int getValue() {
-            return value;
-        }
-
-        public String getText() {
-            return text;
-        }
-    }
-
-
-    /**
      * Initialize all resources needed for the application.
      */
     @Override
@@ -162,12 +123,12 @@ public class MainWindow extends Application {
         // ----- Stage and Scene ----- //
         Scene scene = new Scene(root);
         command_field.requestFocus();
-        scene.getStylesheets().add(WindowConstants.STYLESHEET_PATH.getText());
-        primary_stage.setHeight(WindowConstants.MIN_HEIGHT.getValue());
-        primary_stage.setWidth(WindowConstants.MIN_WIDTH.getValue());
-        primary_stage.setMinHeight(WindowConstants.MIN_HEIGHT.getValue());
-        primary_stage.setMinWidth(WindowConstants.MIN_WIDTH.getValue());
-        primary_stage.setTitle(WindowConstants.WINDOW_TITLE.getText());
+        scene.getStylesheets().add(GuiConstants.StringValues.STYLESHEET_PATH.getValue());
+        primary_stage.setHeight(GuiConstants.WindowSizes.MIN_HEIGHT.getValue());
+        primary_stage.setWidth(GuiConstants.WindowSizes.MIN_WIDTH.getValue());
+        primary_stage.setMinHeight(GuiConstants.WindowSizes.MIN_HEIGHT.getValue());
+        primary_stage.setMinWidth(GuiConstants.WindowSizes.MIN_WIDTH.getValue());
+        primary_stage.setTitle(GuiConstants.StringValues.WINDOW_TITLE.getValue());
         primary_stage.setScene(scene);
     }
 
@@ -208,20 +169,27 @@ public class MainWindow extends Application {
          */
         public void initUI() {
             // ----- Layout ----- //
-            VBox root = new VBox();
+            VBox root = new VBox(10);
+            root.setAlignment(Pos.CENTER);
 
             // ----- Row 1 ----- //
             HBox row1 = new HBox();
+            row1.setAlignment(Pos.CENTER);
             root.getChildren().add(row1);
             Label host_label = new Label("Bind to host:");
+            host_label.setPrefWidth(GuiConstants.LoginWindowSizes.LABEL_WIDTH.getValue());
             TextField host_textfield = new TextField("0.0.0.0");
+            host_textfield.setPrefWidth(GuiConstants.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
             row1.getChildren().addAll(host_label, host_textfield);
 
             // ----- Row 2 ----- //
             HBox row2 = new HBox();
+            row2.setAlignment(Pos.CENTER);
             root.getChildren().add(row2);
             Label port_label = new Label("Bind to port: ");
+            port_label.setPrefWidth(GuiConstants.LoginWindowSizes.LABEL_WIDTH.getValue());
             TextField port_textfield = new TextField("62609");
+            port_textfield.setPrefWidth(GuiConstants.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
             row2.getChildren().addAll(port_label, port_textfield);
 
             // ----- Scene ----- //
@@ -240,6 +208,8 @@ public class MainWindow extends Application {
 
             // ----- Scene ----- //
             Scene scene = new Scene(root); // set the main layout of the scene.
+            login_stage.setWidth(GuiConstants.LoginWindowSizes.PRIMARY_WIDTH.getValue());
+            login_stage.setHeight(GuiConstants.LoginWindowSizes.PRIMARY_HEIGHT.getValue());
             login_stage.setScene(scene); // set the main scene.
         }
 
