@@ -112,9 +112,11 @@ public class MainWindow extends Application {
         root.getChildren().add(col1);
         Label commands_listlabel = new Label("List of available commands:");
         ListView<String> commands_listview = new ListView<>(commands_list);
+        commands_listview.setFocusTraversable(false);
 
         Label clients_listlabel = new Label("Connected clients:");
         ListView<String> clients_listview = new ListView<>(clients_list);
+        clients_listview.setFocusTraversable(false);
         col1.getChildren().addAll(
                 commands_listlabel,
                 commands_listview,
@@ -128,7 +130,9 @@ public class MainWindow extends Application {
 
         Label log_label = new Label("Console");
         TextArea log_view = new TextArea();
+        log_view.setFocusTraversable(false);
         log_view.setEditable(false);
+        log_view.setMouseTransparent(true);
 
         HBox command_group = new HBox();
         TextField command_field = new TextField();
@@ -155,6 +159,7 @@ public class MainWindow extends Application {
 
         // ----- Stage and Scene ----- //
         Scene scene = new Scene(root);
+        command_field.requestFocus();
         primary_stage.setHeight(WindowVariables.MIN_HEIGHT.getValue());
         primary_stage.setWidth(WindowVariables.MIN_WIDTH.getValue());
         primary_stage.setMinHeight(WindowVariables.MIN_HEIGHT.getValue());
