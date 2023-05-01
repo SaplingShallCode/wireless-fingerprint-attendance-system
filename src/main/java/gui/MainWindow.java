@@ -31,7 +31,7 @@ public class MainWindow extends Application {
      * The WindowVariables are a collection of constants that will be used
      * by the MainWindow class.
      */
-    private enum WindowVariables {
+    private enum WindowConstants {
         MIN_HEIGHT(600),
         MIN_WIDTH(800),
         WINDOW_TITLE("Wireless Fingerprint-based Attendance Logger Server by NameGroup"),
@@ -44,7 +44,7 @@ public class MainWindow extends Application {
          * Overloaded constructor for Integer type.
          * @param value Integer value.
          */
-        WindowVariables(int value) {
+        WindowConstants(int value) {
             this.value = value;
         }
 
@@ -52,7 +52,7 @@ public class MainWindow extends Application {
          * Overloaded constructor for String type.
          * @param text String value.
          */
-        WindowVariables(String text) {
+        WindowConstants(String text) {
             this.text = text;
         }
 
@@ -141,13 +141,13 @@ public class MainWindow extends Application {
         command_field.setOnKeyPressed( event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 sendToConsole(log_view, command_field);
-            };
+            }
         });
 
         Button command_button = new Button("Enter");
-        command_button.setOnAction( event -> {
-            sendToConsole(log_view, command_field);
-        });
+        command_button.setOnAction( event ->
+            sendToConsole(log_view, command_field)
+        );
 
         command_group.getChildren().addAll(
                 command_field,
@@ -161,13 +161,13 @@ public class MainWindow extends Application {
 
         // ----- Stage and Scene ----- //
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(WindowVariables.STYLESHEET_PATH.getText());
         command_field.requestFocus();
-        primary_stage.setHeight(WindowVariables.MIN_HEIGHT.getValue());
-        primary_stage.setWidth(WindowVariables.MIN_WIDTH.getValue());
-        primary_stage.setMinHeight(WindowVariables.MIN_HEIGHT.getValue());
-        primary_stage.setMinWidth(WindowVariables.MIN_WIDTH.getValue());
-        primary_stage.setTitle(WindowVariables.WINDOW_TITLE.getText());
+        scene.getStylesheets().add(WindowConstants.STYLESHEET_PATH.getText());
+        primary_stage.setHeight(WindowConstants.MIN_HEIGHT.getValue());
+        primary_stage.setWidth(WindowConstants.MIN_WIDTH.getValue());
+        primary_stage.setMinHeight(WindowConstants.MIN_HEIGHT.getValue());
+        primary_stage.setMinWidth(WindowConstants.MIN_WIDTH.getValue());
+        primary_stage.setTitle(WindowConstants.WINDOW_TITLE.getText());
         primary_stage.setScene(scene);
     }
 
