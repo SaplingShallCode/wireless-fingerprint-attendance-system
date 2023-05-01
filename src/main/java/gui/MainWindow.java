@@ -1,14 +1,16 @@
 package gui;
 
+import server.Commands;
 import server.ServerManager;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.geometry.Pos;
 
 
@@ -17,11 +19,67 @@ import javafx.geometry.Pos;
  * The JavaFX framework is used to build the user interface.
  */
 public class MainWindow extends Application {
+    private final ObservableList<String> commands_list = FXCollections.observableArrayList();
+    private final ObservableList<String> clients_list = FXCollections.observableArrayList();
     private ServerManager server_manager;
     private LoginWindow login_window;
     private Stage primary_stage;
 
 
+    /**
+     * The WindowVariables are a collection of constants that will be used
+     * by the MainWindow class.
+     */
+    private enum WindowVariables {
+        MIN_HEIGHT(600),
+        MIN_WIDTH(800),
+        WINDOW_TITLE("Wireless Fingerprint-based Attendance Logger Server by NameGroup");
+
+        private int value;
+        private String text;
+
+        /**
+         * Overloaded constructor for Integer type.
+         * @param value Integer value.
+         */
+        WindowVariables(int value) {
+            this.value = value;
+        }
+
+        /**
+         * Overloaded constructor for String type.
+         * @param text String value.
+         */
+        WindowVariables(String text) {
+            this.text = text;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public String getText() {
+            return text;
+        }
+    }
+
+
+    /**
+     * Initialize all resources needed for the application.
+     */
+    @Override
+    public void init() {
+        for (Commands command: Commands.values()) {
+            commands_list.add(command.getSyntax() + " - " + command.getDescription());
+        }
+    }
+
+
+    /**
+     * The start method always runs after the init method.
+     *
+     * @param stage Provided by JavaFX application.
+     */
     @Override
     public void start(Stage stage) {
         login_window = new LoginWindow(new Stage());
@@ -46,6 +104,72 @@ public class MainWindow extends Application {
 
 
     private void initUI() {
+        // ----- Layout ----- //
+        HBox root = new HBox();
+
+        // ----- Column 1 ----- //
+        VBox col1 = new VBox();
+        root.getChildren().add(col1);
+        Label commands_listlabel = new Label("List of available commands:");
+        ListView<String> commands_listview = new ListView<>(commands_list);
+
+        Label clients_listlabel = new Label("Connected clients:");
+        ListView<String> clients_listview = new ListView<>(clients_list);
+        col1.getChildren().addAll(
+                commands_listlabel,
+                commands_listview,
+                clients_listlabel,
+                clients_listview
+        );
+
+        // ----- Column 2 ----- //
+        VBox col2 = new VBox();
+        root.getChildren().add(col2);
+
+        Label log_label = new Label("Console");
+        TextArea log_view = new TextArea();
+        log_view.setEditable(false);
+
+        HBox command_group = new HBox();
+        TextField command_field = new TextField();
+        command_field.setOnKeyPressed( event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                sendToConsole(log_view, command_field);
+            };
+        });
+
+        Button command_button = new Button("Enter");
+        command_button.setOnAction( event -> {
+            sendToConsole(log_view, command_field);
+        });
+
+        command_group.getChildren().addAll(
+                command_field,
+                command_button
+        );
+        col2.getChildren().addAll(
+                log_label,
+                log_view,
+                command_group
+        );
+
+        // ----- Stage and Scene ----- //
+        Scene scene = new Scene(root);
+        primary_stage.setHeight(WindowVariables.MIN_HEIGHT.getValue());
+        primary_stage.setWidth(WindowVariables.MIN_WIDTH.getValue());
+        primary_stage.setMinHeight(WindowVariables.MIN_HEIGHT.getValue());
+        primary_stage.setMinWidth(WindowVariables.MIN_WIDTH.getValue());
+        primary_stage.setTitle(WindowVariables.WINDOW_TITLE.getText());
+        primary_stage.setScene(scene);
+    }
+
+
+    private void sendToConsole(TextArea log_view, TextField command_field) {
+        String text = command_field.getText();
+        if (!text.equals("")) {
+            log_view.appendText(text + "\n");
+            command_field.clear();
+        }
     }
 
 
