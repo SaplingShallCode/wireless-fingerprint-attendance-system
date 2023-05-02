@@ -192,7 +192,7 @@ public class MainWindow extends Application {
             port_textfield.setPrefWidth(GuiConstants.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
             row2.getChildren().addAll(port_label, port_textfield);
 
-            // ----- Scene ----- //
+            // ----- Row 3 ----- //
             HBox row3 = new HBox();
             row3.setAlignment(Pos.CENTER);
             root.getChildren().add(row3);
