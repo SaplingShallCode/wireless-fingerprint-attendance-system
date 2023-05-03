@@ -69,11 +69,11 @@ public class MainWindow extends Application {
     public void start(Stage stage) {
         login_window = new LoginWindow(new Stage());
         login_window.initUI();
+        login_window.handleClose();
         login_window.showAndWait();
 
         primary_stage = stage;
         initUI();
-
         // handle the MainWindow close event
         primary_stage.setOnCloseRequest(event -> {
             try {
@@ -247,6 +247,11 @@ public class MainWindow extends Application {
         private String host;
         private final Stage login_stage;
 
+        // components
+        Label host_label;
+        TextField host_textfield;
+        Label port_label;
+        TextField port_textfield;
 
         /**
          * Instantiate a LoginWindow object.
@@ -271,9 +276,9 @@ public class MainWindow extends Application {
             HBox row1 = new HBox();
             row1.setAlignment(Pos.CENTER);
             root.getChildren().add(row1);
-            Label host_label = new Label("Bind to host:");
+            host_label = new Label("Bind to host:");
             host_label.setPrefWidth(GuiConstants.LoginWindowSizes.LABEL_WIDTH.getValue());
-            TextField host_textfield = new TextField("0.0.0.0");
+            host_textfield = new TextField("0.0.0.0");
             host_textfield.setPrefWidth(GuiConstants.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
             row1.getChildren().addAll(host_label, host_textfield);
 
@@ -281,9 +286,9 @@ public class MainWindow extends Application {
             HBox row2 = new HBox();
             row2.setAlignment(Pos.CENTER);
             root.getChildren().add(row2);
-            Label port_label = new Label("Bind to port: ");
+            port_label = new Label("Bind to port: ");
             port_label.setPrefWidth(GuiConstants.LoginWindowSizes.LABEL_WIDTH.getValue());
-            TextField port_textfield = new TextField("62609");
+            port_textfield = new TextField("62609");
             port_textfield.setPrefWidth(GuiConstants.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
             row2.getChildren().addAll(port_label, port_textfield);
 
@@ -307,6 +312,18 @@ public class MainWindow extends Application {
             login_stage.setHeight(GuiConstants.LoginWindowSizes.PRIMARY_HEIGHT.getValue());
             login_stage.setTitle(GuiConstants.StringValues.LOGIN_WINDOW_TITLE.getValue());
             login_stage.setScene(scene); // set the main scene.
+        }
+
+
+        /**
+         * Handle the LoginWindow close event.
+         */
+        public void handleClose() {
+            login_stage.setOnCloseRequest(event -> {
+                host = host_textfield.getText();
+                port = Integer.parseInt(port_textfield.getText());
+                closeWindow();
+            });
         }
 
 
