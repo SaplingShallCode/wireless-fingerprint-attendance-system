@@ -1,5 +1,6 @@
 package gui;
 
+import javafx.application.Platform;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import server.Commands;
@@ -52,6 +53,7 @@ public class MainWindow extends Application {
      */
     @Override
     public void init() {
+        Platform.setImplicitExit(true); // close app when all windows are closed.
         for (Commands command: Commands.values()) {
             commands_list.add(command.getSyntax() + " - " + command.getDescription());
         }
@@ -71,18 +73,38 @@ public class MainWindow extends Application {
 
         primary_stage = stage;
         initUI();
-        primary_stage.show();
 
+        // handle the MainWindow close event
+        primary_stage.setOnCloseRequest(event -> {
+            try {
+                // if the server is not closed then remind user to close.
+                // NOTE: if server_manager is null then a NullPointerException is thrown.
+                if (!server_manager.isClosed()) {
+                    event.consume();
+                    Alert alert_window = new Alert(Alert.AlertType.WARNING);
+                    alert_window.setTitle("Warning");
+                    alert_window.setHeaderText("Server is still open...");
+                    alert_window.setContentText("Please close the server before exiting the app.");
+                    alert_window.showAndWait();
+                }
+                else {
+                    Platform.exit();
+                }
+            }
+            catch (NullPointerException npe) {
+                Platform.exit();
+            }
+        });
+        primary_stage.show();
     }
 
 
     /**
      * Check if the server is closed.
-     * If the server is not closed then remind the user to close the server.
      */
     @Override
     public void stop() {
-        // TODO: remind the user to close the server first before closing.
+        System.out.println("Successfully close app.");
     }
 
 
