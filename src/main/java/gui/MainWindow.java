@@ -46,6 +46,7 @@ public class MainWindow extends Application {
     private TextField command_field;
     private Button command_button;
 
+
     /**
      * Initialize all resources needed for the application.
      */
@@ -158,20 +159,21 @@ public class MainWindow extends Application {
         log_view.setFont(Font.font("Consolas"));
         log_view.setFocusTraversable(false);
         log_view.setEditable(false);
-        log_view.setMouseTransparent(true);
 
         HBox command_group = new HBox();
         command_field = new TextField();
         command_field.setOnKeyPressed( event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 sendToConsole(command_field.getText());
+                command_field.clear();
             }
         });
 
         command_button = new Button("Enter");
-        command_button.setOnAction( event ->
-            sendToConsole(command_field.getText())
-        );
+        command_button.setOnAction( event -> {
+            sendToConsole(command_field.getText());
+            command_field.clear();
+        });
 
         command_group.getChildren().addAll(
                 command_field,
@@ -187,6 +189,7 @@ public class MainWindow extends Application {
         Scene scene = new Scene(root);
         command_field.requestFocus();
         scene.getStylesheets().add(GuiConstants.StringValues.STYLESHEET_PATH.getValue());
+
         primary_stage.setHeight(GuiConstants.WindowSizes.MIN_HEIGHT.getValue());
         primary_stage.setWidth(GuiConstants.WindowSizes.MIN_WIDTH.getValue());
         primary_stage.setMinHeight(GuiConstants.WindowSizes.MIN_HEIGHT.getValue());
@@ -196,10 +199,18 @@ public class MainWindow extends Application {
     }
 
 
+    /**
+     * Append text to the console.
+     * @param text text to be appended.
+     */
     public void sendToConsole(String text) {
         if (!text.equals("")) {
-            log_view.appendText("[INFO]: " + text + "\n");
-            command_field.clear();
+            log_view.appendText(
+                    String.format(
+                            "[INFO]: %s\n",
+                            text
+                    )
+            );
         }
     }
 
@@ -221,8 +232,8 @@ public class MainWindow extends Application {
          * @param stage the stage object. should be undecorated.
          */
         LoginWindow (Stage stage) {
-            this.login_stage = stage;
-            this.login_stage.setResizable(false);
+            login_stage = stage;
+            login_stage.setResizable(false);
         }
 
 
