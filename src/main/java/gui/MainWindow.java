@@ -1,6 +1,7 @@
 package gui;
 
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Font;
 import server.Commands;
 import server.ServerManager;
 import javafx.application.Application;
@@ -13,12 +14,18 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.geometry.Pos;
+import java.io.IOException;
 
 
 /**
  * The MainWindow class handles the user interface of the server.
  * The JavaFX framework is used to build the user interface.
  */
+@SuppressWarnings({
+        "InnerClassMayBeStatic",
+        "FieldCanBeLocal",
+        "unused"
+})
 public class MainWindow extends Application {
     private final ObservableList<String> commands_list = FXCollections.observableArrayList();
     private final ObservableList<String> clients_list = FXCollections.observableArrayList();
@@ -26,6 +33,18 @@ public class MainWindow extends Application {
     private LoginWindow login_window;
     private Stage primary_stage;
 
+    // components
+    private Label commands_listlabel;
+    private ListView<String> commands_listview;
+    private Label clients_listlabel;
+    private ListView<String> clients_listview;
+    private Label server_label;
+    private Button start_server_button;
+    private Button stop_server_button;
+    private Label log_label;
+    private TextArea log_view;
+    private TextField command_field;
+    private Button command_button;
 
     /**
      * Initialize all resources needed for the application.
@@ -73,41 +92,85 @@ public class MainWindow extends Application {
         // ----- Column 1 ----- //
         VBox col1 = new VBox();
         root.setLeft(col1);
-        Label commands_listlabel = new Label("List of available commands:");
-        ListView<String> commands_listview = new ListView<>(commands_list);
+        commands_listlabel = new Label("List of available commands:");
+        commands_listview = new ListView<>(commands_list);
         commands_listview.setFocusTraversable(false);
 
-        Label clients_listlabel = new Label("Connected clients:");
-        ListView<String> clients_listview = new ListView<>(clients_list);
+        clients_listlabel = new Label("Connected clients:");
+        clients_listview = new ListView<>(clients_list);
         clients_listview.setFocusTraversable(false);
+
+        HBox server_group = new HBox();
+        server_label = new Label("Server");
+
+        start_server_button = new Button("Start");
+        start_server_button.setOnAction(event -> {
+            try {
+                server_manager = new ServerManager(
+                        this,
+                        login_window.getHost(),
+                        login_window.getPort()
+                );
+                new Thread(server_manager).start();
+                start_server_button.setDisable(true);
+                stop_server_button.setDisable(false);
+                sendToConsole("Server started.");
+            }
+            catch (IOException ioe) {
+                sendToConsole("Error when starting server.");
+            }
+        });
+
+        stop_server_button = new Button("Stop");
+        stop_server_button.setDisable(true);
+        stop_server_button.setOnAction(event -> {
+            try {
+                server_manager.stopServer();
+                sendToConsole("Server closed.");
+                stop_server_button.setDisable(true);
+                start_server_button.setDisable(false);
+            }
+            catch (IOException ioe) {
+                sendToConsole("Error when closing server.");
+            }
+        });
+
+        server_group.getChildren().addAll(
+                start_server_button,
+                stop_server_button
+        );
+
         col1.getChildren().addAll(
                 commands_listlabel,
                 commands_listview,
                 clients_listlabel,
-                clients_listview
+                clients_listview,
+                server_label,
+                server_group
         );
 
         // ----- Column 2 ----- //
         VBox col2 = new VBox();
         root.setCenter(col2);
 
-        Label log_label = new Label("Console");
-        TextArea log_view = new TextArea();
+        log_label = new Label("Console");
+        log_view = new TextArea();
+        log_view.setFont(Font.font("Consolas"));
         log_view.setFocusTraversable(false);
         log_view.setEditable(false);
         log_view.setMouseTransparent(true);
 
         HBox command_group = new HBox();
-        TextField command_field = new TextField();
+        command_field = new TextField();
         command_field.setOnKeyPressed( event -> {
             if (event.getCode() == KeyCode.ENTER) {
-                sendToConsole(log_view, command_field);
+                sendToConsole(command_field.getText());
             }
         });
 
-        Button command_button = new Button("Enter");
+        command_button = new Button("Enter");
         command_button.setOnAction( event ->
-            sendToConsole(log_view, command_field)
+            sendToConsole(command_field.getText())
         );
 
         command_group.getChildren().addAll(
@@ -133,10 +196,9 @@ public class MainWindow extends Application {
     }
 
 
-    private void sendToConsole(TextArea log_view, TextField command_field) {
-        String text = command_field.getText();
+    public void sendToConsole(String text) {
         if (!text.equals("")) {
-            log_view.appendText(text + "\n");
+            log_view.appendText("[INFO]: " + text + "\n");
             command_field.clear();
         }
     }
