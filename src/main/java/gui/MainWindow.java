@@ -1,10 +1,8 @@
 package gui;
 
-import javafx.application.Platform;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.text.Font;
 import server.Commands;
 import server.ServerManager;
+import javafx.application.Platform;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,8 +10,10 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Font;
 import javafx.geometry.Pos;
 import java.io.IOException;
 
@@ -260,6 +260,7 @@ public class MainWindow extends Application {
          */
         LoginWindow (Stage stage) {
             login_stage = stage;
+            login_stage.setAlwaysOnTop(true);
             login_stage.setResizable(false);
         }
 
@@ -319,11 +320,9 @@ public class MainWindow extends Application {
          * Handle the LoginWindow close event.
          */
         public void handleClose() {
-            login_stage.setOnCloseRequest(event -> {
-                host = host_textfield.getText();
-                port = Integer.parseInt(port_textfield.getText());
-                closeWindow();
-            });
+            login_stage.setOnCloseRequest(event ->
+                Platform.exit()
+            );
         }
 
 
@@ -348,7 +347,8 @@ public class MainWindow extends Application {
 
 
         /**
-         * Show the window/stage while blocking the current thread.
+         * Shows the window and block the thread until window
+         * is closed.
          */
         public void showAndWait() {
             login_stage.showAndWait();
