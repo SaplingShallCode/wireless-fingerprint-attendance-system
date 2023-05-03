@@ -14,10 +14,10 @@ import gui.MainWindow;
  */
 @SuppressWarnings("unused")
 public class ServerManager implements Runnable {
-    private final ServerSocket serversocket;
-    private final ArrayList<ClientHandler> clients = new ArrayList<>();
+    private final ServerSocket server_socket;
+    private final ArrayList<FSClient> clients_list = new ArrayList<>();
     private final MainWindow app;
-    private boolean isRunning;
+    private boolean is_running;
 
 
 
@@ -28,25 +28,26 @@ public class ServerManager implements Runnable {
      */
     public ServerManager(MainWindow app, String hostname, int port) throws IOException {
         this.app = app;
-        serversocket = new ServerSocket();
+        server_socket = new ServerSocket();
         SocketAddress address = new InetSocketAddress(hostname, port);
-        serversocket.bind(address);
+        server_socket.bind(address);
     }
 
 
     @Override
     public void run() {
-        isRunning = true;
-        while (isRunning) {
+        is_running = true;
+        while (is_running) {
             try {
-                app.sendToConsole("Waiting for a connection on port " + serversocket.getLocalPort());
+                app.sendToConsole("Waiting for a connection on port " + server_socket.getLocalPort());
                 // blocks current thread while waiting for a client to connect. will throw an IOException.
-                Socket client = serversocket.accept();
+                Socket client_socket = server_socket.accept();
 
                 // create a thread for the connected client and run the thread.
-                ClientHandler client_handler = new ClientHandler(client);
-                clients.add(client_handler); // add the client to a list to access ClientHandler methods.
-                new Thread(client_handler).start();
+                FSClient client = new FSClient(client_socket);
+                // add to clients list for method access.
+                clients_list.add(client);
+                new Thread(client).start();
             }
             catch (IOException e) {
                 try {
@@ -64,8 +65,8 @@ public class ServerManager implements Runnable {
      * Close the server.
      */
     public void stopServer() throws IOException {
-        isRunning = false;
-        serversocket.close();
+        is_running = false;
+        server_socket.close();
     }
 
 
@@ -74,7 +75,7 @@ public class ServerManager implements Runnable {
      * @return true if the socket is closed.
      */
     public boolean isClosed() {
-        return serversocket.isClosed();
+        return server_socket.isClosed();
     }
 
 
@@ -82,36 +83,36 @@ public class ServerManager implements Runnable {
      * Returns the list of clients connected to the server.
      * @return the Arraylist of clients.
      */
-    public ArrayList<ClientHandler> getClients() {
-        return clients;
+    public ArrayList<FSClient> getClients() {
+        return clients_list;
     }
 
 
     /**
      * Remove the client from the clients list upon disconnection.
-     * @param c a client socket.
+     * @param client a client socket.
      */
-    public void removeClient(ClientHandler c) {
-        this.clients.remove(c);
+    public void removeClient(FSClient client) {
+        clients_list.remove(client);
     }
 
 
     /**
-     * The ClientHandler is a nested class that will handle a client that
-     * connected to the server in another thread.
+     * The FSClient represents a Fingerprint Scanner Client. Every client object
+     * runs in a new thread created by the server.
      */
-    private class ClientHandler extends Thread {
-        private final Socket client;
+    private class FSClient extends Thread {
+        private final Socket client_socket;
         private BufferedReader input;
         private BufferedWriter output;
-        private boolean isConnected;
+        private boolean is_connected;
 
 
         /**
          * @param socket the client socket that connected to the server.
          */
-        public ClientHandler(Socket socket) {
-            this.client = socket;
+        public FSClient(Socket socket) {
+            client_socket = socket;
         }
 
 
@@ -122,10 +123,10 @@ public class ServerManager implements Runnable {
          */
         private void setIO() throws IOException {
             input = new BufferedReader(
-                    new InputStreamReader(client.getInputStream())
+                    new InputStreamReader(client_socket.getInputStream())
             );
             output = new BufferedWriter(
-                    new OutputStreamWriter(client.getOutputStream())
+                    new OutputStreamWriter(client_socket.getOutputStream())
             );
         }
 
@@ -134,25 +135,25 @@ public class ServerManager implements Runnable {
          * Disconnect the client from the server.
          */
         private void disconnect() {
-            isConnected = false;
+            is_connected = false;
         }
 
 
         @Override
         public void run() {
-            isConnected = true;
+            is_connected = true;
             try {
-                app.sendToConsole("Just connected to client: " + client.getRemoteSocketAddress());
+                app.sendToConsole("Just connected to client: " + client_socket.getRemoteSocketAddress());
                 // connect input and output streams for communication and send feedback to the client
                 setIO();
                 // TODO: remove next three output lines.
-                output.write("[server] You are connected to " + client.getLocalSocketAddress());
+                output.write("[server] You are connected to " + client_socket.getLocalSocketAddress());
                 output.newLine();
                 output.flush();
 
                 /* TODO: create a main loop. the main loop will listen for data from the client.*/
                 String message;
-                while (isConnected) {
+                while (is_connected) {
                     message = input.readLine();
                 }
             }
@@ -161,9 +162,9 @@ public class ServerManager implements Runnable {
             }
             finally {
                 removeClient(this);
-                app.sendToConsole("Closing connection for " + client.getRemoteSocketAddress());
+                app.sendToConsole("Closing connection for " + client_socket.getRemoteSocketAddress());
                 try {
-                    client.close();
+                    client_socket.close();
                 }
                 catch (IOException e) {
                     e.printStackTrace();
