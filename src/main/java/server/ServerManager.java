@@ -3,6 +3,7 @@ package server;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import gui.MainWindow;
 
 
 /**
@@ -11,10 +12,13 @@ import java.util.ArrayList;
  * handle multiple clients. The server will serve clients data from
  * the database and also update the database data.
  */
-public class ServerManager implements Runnable{
-    private ServerSocket serversocket;
-    private boolean isRunning;
+@SuppressWarnings("unused")
+public class ServerManager implements Runnable {
+    private final ServerSocket serversocket;
     private final ArrayList<ClientHandler> clients = new ArrayList<>();
+    private final MainWindow app;
+    private boolean isRunning;
+
 
 
     /**
@@ -22,7 +26,8 @@ public class ServerManager implements Runnable{
      * @param port the fixed port number.
      * @exception IOException error when opening the socket.
      */
-    public ServerManager(String hostname, int port) throws IOException{
+    public ServerManager(MainWindow app, String hostname, int port) throws IOException {
+        this.app = app;
         serversocket = new ServerSocket();
         SocketAddress address = new InetSocketAddress(hostname, port);
         serversocket.bind(address);
@@ -34,12 +39,9 @@ public class ServerManager implements Runnable{
         isRunning = true;
         while (isRunning) {
             try {
-                System.out.println("[info] Waiting for a connection on port " + serversocket.getLocalPort());
+                app.sendToConsole("Waiting for a connection on port " + serversocket.getLocalPort());
                 // blocks current thread while waiting for a client to connect. will throw an IOException.
                 Socket client = serversocket.accept();
-
-                /* TODO: create a table in the database for fingerprint scanner clients. will be used for
-                 *   client verification. */
 
                 // create a thread for the connected client and run the thread.
                 ClientHandler client_handler = new ClientHandler(client);
@@ -47,7 +49,12 @@ public class ServerManager implements Runnable{
                 new Thread(client_handler).start();
             }
             catch (IOException e) {
-                stopServer();
+                try {
+                    stopServer();
+                }
+                catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
             }
         }
     }
@@ -56,14 +63,9 @@ public class ServerManager implements Runnable{
     /**
      * Close the server.
      */
-    public void stopServer() {
+    public void stopServer() throws IOException {
         isRunning = false;
-        try {
-            serversocket.close();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        serversocket.close();
     }
 
 
@@ -140,7 +142,7 @@ public class ServerManager implements Runnable{
         public void run() {
             isConnected = true;
             try {
-                System.out.println("[info] just connected to client: " + client.getRemoteSocketAddress());
+                app.sendToConsole("Just connected to client: " + client.getRemoteSocketAddress());
                 // connect input and output streams for communication and send feedback to the client
                 setIO();
                 // TODO: remove next three output lines.
@@ -159,7 +161,7 @@ public class ServerManager implements Runnable{
             }
             finally {
                 removeClient(this);
-                System.out.println("[info] closing connection for " + client.getRemoteSocketAddress());
+                app.sendToConsole("Closing connection for " + client.getRemoteSocketAddress());
                 try {
                     client.close();
                 }
