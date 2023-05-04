@@ -16,7 +16,6 @@ import gui.MainWindow;
 public class ServerManager implements Runnable {
     private final ServerSocket server_socket;
     private final ArrayList<FSClient> clients_list = new ArrayList<>();
-    private final MainWindow app;
     private boolean is_running;
 
 
@@ -26,8 +25,7 @@ public class ServerManager implements Runnable {
      * @param port the fixed port number.
      * @exception IOException error when opening the socket.
      */
-    public ServerManager(MainWindow app, String hostname, int port) throws IOException {
-        this.app = app;
+    public ServerManager(String hostname, int port) throws IOException {
         server_socket = new ServerSocket();
         SocketAddress address = new InetSocketAddress(hostname, port);
         server_socket.bind(address);
@@ -39,7 +37,7 @@ public class ServerManager implements Runnable {
         is_running = true;
         while (is_running) {
             try {
-                app.sendToConsole("Waiting for a connection on port " + server_socket.getLocalPort());
+                System.out.println("Server started.");
                 // blocks current thread while waiting for a client to connect. will throw an IOException.
                 Socket client_socket = server_socket.accept();
 
@@ -56,6 +54,7 @@ public class ServerManager implements Runnable {
                 catch (IOException ioe) {
                     ioe.printStackTrace();
                 }
+                System.out.println("Server stopped.");
             }
         }
     }
@@ -67,6 +66,16 @@ public class ServerManager implements Runnable {
     public void stopServer() throws IOException {
         is_running = false;
         server_socket.close();
+    }
+
+
+    /**
+     * Returns the port number on which the server_manager is listening.
+     *
+     * @return the port that the server is bound to.
+     */
+    public int getLocalPort() {
+        return server_socket.getLocalPort();
     }
 
 
@@ -143,7 +152,7 @@ public class ServerManager implements Runnable {
         public void run() {
             is_connected = true;
             try {
-                app.sendToConsole("Just connected to client: " + client_socket.getRemoteSocketAddress());
+                System.out.println("Just connected to client " + client_socket.getRemoteSocketAddress());
                 // connect input and output streams for communication and send feedback to the client
                 setIO();
                 // TODO: remove next three output lines.
@@ -162,7 +171,7 @@ public class ServerManager implements Runnable {
             }
             finally {
                 removeClient(this);
-                app.sendToConsole("Closing connection for " + client_socket.getRemoteSocketAddress());
+                System.out.println("Closing connection for " + client_socket.getRemoteSocketAddress());
                 try {
                     client_socket.close();
                 }

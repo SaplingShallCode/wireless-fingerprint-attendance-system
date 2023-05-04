@@ -130,7 +130,6 @@ public class MainWindow extends Application {
         start_server_button.setOnAction(event -> {
             try {
                 server_manager = new ServerManager(
-                        this,
                         login_window.getHost(),
                         login_window.getPort()
                 );
@@ -138,6 +137,7 @@ public class MainWindow extends Application {
                 start_server_button.setDisable(true);
                 stop_server_button.setDisable(false);
                 sendToConsole("Server started.");
+                sendToConsole("Waiting for a connection on port " + server_manager.getLocalPort());
             }
             catch (IOException ioe) {
                 sendToConsole("Error when starting server.");
