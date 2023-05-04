@@ -69,7 +69,9 @@ public class ServerManager implements Runnable {
     public void stopServer() throws IOException {
         app.sendToConsole("Server closed.");
         is_running = false;
-        server_socket.close();
+        if (server_socket != null) {
+            server_socket.close();
+        }
     }
 
 
@@ -174,7 +176,7 @@ public class ServerManager implements Runnable {
 
 
         /**
-         * Properly close the client.
+         * Properly close the client. Checking if each client is null before closing.
          *
          * @param socket the client socket.
          * @param input the input stream of the client.

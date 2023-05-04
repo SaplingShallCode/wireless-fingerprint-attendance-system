@@ -107,7 +107,9 @@ public class MainWindow extends Application {
         System.out.println("Successfully close app.");
     }
 
-
+    /**
+     * initialize the UI of the application.
+     */
     private void initUI() {
         // ----- Layout ----- //
         BorderPane root = new BorderPane();
@@ -135,12 +137,12 @@ public class MainWindow extends Application {
                         login_window.getPort()
                 );
                 new Thread(server_manager).start();
-                start_server_button.setDisable(true);
-                stop_server_button.setDisable(false);
             }
             catch (IOException ioe) {
                 sendToConsole("Error opening socket.");
             }
+            start_server_button.setDisable(true);
+            stop_server_button.setDisable(false);
         });
 
         stop_server_button = new Button("Stop");
@@ -148,12 +150,12 @@ public class MainWindow extends Application {
         stop_server_button.setOnAction(event -> {
             try {
                 server_manager.stopServer();
-                stop_server_button.setDisable(true);
-                start_server_button.setDisable(false);
             }
             catch (IOException ioe) {
                 sendToConsole("Error when closing server.");
             }
+            stop_server_button.setDisable(true);
+            start_server_button.setDisable(false);
         });
 
         server_group.getChildren().addAll(
