@@ -130,17 +130,16 @@ public class MainWindow extends Application {
         start_server_button.setOnAction(event -> {
             try {
                 server_manager = new ServerManager(
+                        this,
                         login_window.getHost(),
                         login_window.getPort()
                 );
                 new Thread(server_manager).start();
                 start_server_button.setDisable(true);
                 stop_server_button.setDisable(false);
-                sendToConsole("Server started.");
-                sendToConsole("Waiting for a connection on port " + server_manager.getLocalPort());
             }
             catch (IOException ioe) {
-                sendToConsole("Error when starting server.");
+                sendToConsole("Error opening socket.");
             }
         });
 
@@ -149,7 +148,6 @@ public class MainWindow extends Application {
         stop_server_button.setOnAction(event -> {
             try {
                 server_manager.stopServer();
-                sendToConsole("Server closed.");
                 stop_server_button.setDisable(true);
                 start_server_button.setDisable(false);
             }
@@ -222,16 +220,19 @@ public class MainWindow extends Application {
 
 
     /**
-     * Append text to the console.
+     * Append text to the console. This method is run in a thread to
+     * avoid concurrency errors.
+     *
      * @param text text to be appended.
      */
     public void sendToConsole(String text) {
         if (!text.equals("")) {
-            log_view.appendText(
-                    String.format(
-                            "[INFO]: %s\n",
-                            text
-                    )
+            Platform.runLater(() ->
+                log_view.appendText(String.format(
+                        "[INFO]: %s\n",
+                        text
+                        )
+                )
             );
         }
     }
