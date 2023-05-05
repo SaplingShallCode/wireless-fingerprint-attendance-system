@@ -10,11 +10,10 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.geometry.Pos;
+import javafx.geometry.Insets;
 import java.io.IOException;
 
 
@@ -111,12 +110,9 @@ public class MainWindow extends Application {
      * initialize the UI of the application.
      */
     private void initUI() {
-        // ----- Layout ----- //
-        BorderPane root = new BorderPane();
-
         // ----- Column 1 ----- //
         VBox col1 = new VBox();
-        root.setLeft(col1);
+
         commands_listlabel = new Label("List of available commands:");
         commands_listview = new ListView<>(commands_list);
         commands_listview.setFocusTraversable(false);
@@ -129,6 +125,7 @@ public class MainWindow extends Application {
         server_label = new Label("Server");
 
         start_server_button = new Button("Start");
+        start_server_button.setMaxWidth(Double.MAX_VALUE);
         start_server_button.setOnAction(event -> {
             try {
                 server_manager = new ServerManager(
@@ -146,6 +143,7 @@ public class MainWindow extends Application {
         });
 
         stop_server_button = new Button("Stop");
+        stop_server_button.setMaxWidth(Double.MAX_VALUE);
         stop_server_button.setDisable(true);
         stop_server_button.setOnAction(event -> {
             try {
@@ -172,18 +170,22 @@ public class MainWindow extends Application {
                 server_group
         );
 
+        HBox.setHgrow(start_server_button, Priority.ALWAYS);
+        HBox.setHgrow(stop_server_button, Priority.ALWAYS);
+
         // ----- Column 2 ----- //
         VBox col2 = new VBox();
-        root.setCenter(col2);
 
         log_label = new Label("Console");
         log_view = new TextArea();
+        log_view.setMaxHeight(Double.MAX_VALUE);
         log_view.setFont(Font.font("Consolas"));
         log_view.setFocusTraversable(false);
         log_view.setEditable(false);
 
         HBox command_group = new HBox();
         command_field = new TextField();
+        command_field.setMaxWidth(Double.MAX_VALUE);
         command_field.setOnKeyPressed( event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 sendToConsole(command_field.getText());
@@ -206,6 +208,17 @@ public class MainWindow extends Application {
                 log_view,
                 command_group
         );
+
+        VBox.setVgrow(log_view, Priority.ALWAYS);
+        HBox.setHgrow(command_field, Priority.ALWAYS);
+
+        // ----- Layout ----- //
+        BorderPane root = new BorderPane();
+        root.setLeft(col1);
+        root.setCenter(col2);
+
+        BorderPane.setMargin(col1, new Insets(10));
+        BorderPane.setMargin(col2, new Insets(10));
 
         // ----- Stage and Scene ----- //
         Scene scene = new Scene(root);
@@ -272,16 +285,13 @@ public class MainWindow extends Application {
          * Initialize the UI of the window.
          */
         public void initUI() {
-            // ----- Layout ----- //
-            VBox root = new VBox(10);
-            root.setAlignment(Pos.CENTER);
-
             // ----- Row 1 ----- //
             HBox row1 = new HBox();
             row1.setAlignment(Pos.CENTER);
-            root.getChildren().add(row1);
+
             host_label = new Label("Bind to host:");
             host_label.setPrefWidth(GuiConstants.LoginWindowSizes.LABEL_WIDTH.getValue());
+
             host_textfield = new TextField("0.0.0.0");
             host_textfield.setPrefWidth(GuiConstants.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
             row1.getChildren().addAll(host_label, host_textfield);
@@ -289,9 +299,10 @@ public class MainWindow extends Application {
             // ----- Row 2 ----- //
             HBox row2 = new HBox();
             row2.setAlignment(Pos.CENTER);
-            root.getChildren().add(row2);
+
             port_label = new Label("Bind to port: ");
             port_label.setPrefWidth(GuiConstants.LoginWindowSizes.LABEL_WIDTH.getValue());
+
             port_textfield = new TextField("62609");
             port_textfield.setPrefWidth(GuiConstants.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
             row2.getChildren().addAll(port_label, port_textfield);
@@ -299,8 +310,9 @@ public class MainWindow extends Application {
             // ----- Row 3 ----- //
             HBox row3 = new HBox();
             row3.setAlignment(Pos.CENTER);
-            root.getChildren().add(row3);
+
             Button enter_button = new Button("Enter");
+            enter_button.setMaxWidth(Double.MAX_VALUE);
             row3.getChildren().addAll(enter_button);
             enter_button.setOnAction(e -> {
                 // Assign the text inputs from the text fields to the respective variables.
@@ -309,6 +321,19 @@ public class MainWindow extends Application {
                 closeWindow();
             });
 
+            HBox.setHgrow(enter_button, Priority.ALWAYS);
+
+            // ----- Layout ----- //
+            BorderPane root = new BorderPane();
+            VBox semi_root = new VBox(10);
+            root.setCenter(semi_root);
+            semi_root.setAlignment(Pos.CENTER);
+            semi_root.getChildren().addAll(
+                    row1,
+                    row2,
+                    row3
+            );
+            BorderPane.setMargin(semi_root, new Insets(10));
 
             // ----- Scene ----- //
             Scene scene = new Scene(root); // set the main layout of the scene.
