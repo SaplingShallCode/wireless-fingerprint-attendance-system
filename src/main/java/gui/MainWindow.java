@@ -16,8 +16,8 @@ import javafx.geometry.Pos;
 import javafx.geometry.Insets;
 import utility.LogHelper;
 import utility.LogTypes;
-
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 /**
@@ -249,6 +249,16 @@ public class MainWindow extends Application {
                 log_view.appendText(text + "\n")
             );
         }
+    }
+
+
+    public void updateClientsList(ArrayList<ServerManager.FSClient> fsclients) {
+        Platform.runLater(() -> {
+            clients_list.clear();
+            for (ServerManager.FSClient c : fsclients) {
+                clients_list.add(c.getClientSocketAddress());
+            }
+        });
     }
 
 
