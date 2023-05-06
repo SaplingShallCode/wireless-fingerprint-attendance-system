@@ -14,6 +14,9 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
+import utility.LogHelper;
+import utility.LogTypes;
+
 import java.io.IOException;
 
 
@@ -136,7 +139,7 @@ public class MainWindow extends Application {
                 new Thread(server_manager).start();
             }
             catch (IOException ioe) {
-                sendToConsole("Error opening socket.");
+                sendToConsole(LogHelper.log("Error opening socket.", LogTypes.ERROR));
             }
             start_server_button.setDisable(true);
             stop_server_button.setDisable(false);
@@ -150,7 +153,7 @@ public class MainWindow extends Application {
                 server_manager.stopServer();
             }
             catch (IOException ioe) {
-                sendToConsole("Error when closing server.");
+                sendToConsole(LogHelper.log("Error when closing server.", LogTypes.ERROR));
             }
             stop_server_button.setDisable(true);
             start_server_button.setDisable(false);
@@ -188,14 +191,14 @@ public class MainWindow extends Application {
         command_field.setMaxWidth(Double.MAX_VALUE);
         command_field.setOnKeyPressed( event -> {
             if (event.getCode() == KeyCode.ENTER) {
-                sendToConsole(command_field.getText());
+                sendToConsole(LogHelper.log(command_field.getText(), LogTypes.CONSOLE));
                 command_field.clear();
             }
         });
 
         command_button = new Button("Enter");
         command_button.setOnAction( event -> {
-            sendToConsole(command_field.getText());
+            sendToConsole(LogHelper.log(command_field.getText(), LogTypes.CONSOLE));
             command_field.clear();
         });
 
@@ -241,13 +244,9 @@ public class MainWindow extends Application {
      * @param text text to be appended.
      */
     public void sendToConsole(String text) {
-        if (!text.equals("")) {
+        if (text != null) {
             Platform.runLater(() ->
-                log_view.appendText(String.format(
-                        "[INFO]: %s\n",
-                        text
-                        )
-                )
+                log_view.appendText(text + "\n")
             );
         }
     }
