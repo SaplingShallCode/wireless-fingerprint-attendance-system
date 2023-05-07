@@ -6,6 +6,11 @@ package gui;
  */
 public class GuiConstants {
 
+    /**
+     * Disable instantiation of this object.
+     */
+    private GuiConstants() {}
+
     public enum WindowSizes {
         MIN_HEIGHT(600),
         MIN_WIDTH(1000),
