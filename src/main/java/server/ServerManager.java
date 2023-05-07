@@ -17,7 +17,7 @@ import utility.LogTypes;
 @SuppressWarnings("unused")
 public class ServerManager implements Runnable {
     private final ServerSocket server_socket;
-    private final ArrayList<FSClient> clients_list = new ArrayList<>();
+    private final ArrayList<FSClient> fsclients = new ArrayList<>();
     private final MainWindow app;
     private boolean is_running;
 
@@ -52,17 +52,28 @@ public class ServerManager implements Runnable {
                 // create a thread for the connected client and run the thread.
                 FSClient client = new FSClient(client_socket);
                 // add to clients list for method access.
-                clients_list.add(client);
+                fsclients.add(client);
                 new Thread(client).start();
             }
             catch (IOException e) {
-                try {
-                    stopServer();
+                LogHelper.debugLog("Closing all client sockets.");
+                app.sendToConsole(LogHelper.log("Closing all client sockets.", LogTypes.INFO));
+                for (FSClient client : fsclients) {
+                    if (client != null) {
+                        app.sendToConsole(LogHelper.log(
+                                "Closing connection for " + client.getClientSocketAddress(),
+                                LogTypes.INFO
+                        ));
+                        client.closeAll();
+                        removeClient(client);
+                    }
                 }
-                catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
+                app.sendToConsole(LogHelper.log("All client sockets have been closed.", LogTypes.INFO));
+                app.sendToConsole(LogHelper.log("Server sucessfully closed.", LogTypes.INFO));
                 LogHelper.debugLog("Server stopped.");
+            }
+            finally {
+                sendClientListUpdate();
             }
         }
     }
@@ -72,7 +83,7 @@ public class ServerManager implements Runnable {
      * Close the server.
      */
     public void stopServer() throws IOException {
-        app.sendToConsole(LogHelper.log("Server closed.", LogTypes.INFO));
+        app.sendToConsole(LogHelper.log("Closing server.", LogTypes.INFO));
         is_running = false;
         if (server_socket != null) {
             server_socket.close();
@@ -94,7 +105,15 @@ public class ServerManager implements Runnable {
      * @return the Arraylist of clients.
      */
     public ArrayList<FSClient> getClients() {
-        return clients_list;
+        return fsclients;
+    }
+
+
+    /**
+     * Updates the clients list from the gui.
+     */
+    public void sendClientListUpdate() {
+        app.updateClientsList(fsclients);
     }
 
 
@@ -103,7 +122,7 @@ public class ServerManager implements Runnable {
      * @param client a client socket.
      */
     public void removeClient(FSClient client) {
-        clients_list.remove(client);
+        fsclients.remove(client);
     }
 
 
@@ -111,11 +130,12 @@ public class ServerManager implements Runnable {
      * The FSClient represents a Fingerprint Scanner Client. Every client object
      * runs in a new thread created by the server.
      */
-    private class FSClient extends Thread {
+    public class FSClient extends Thread {
         private final Socket client_socket;
         private BufferedReader input;
         private BufferedWriter output;
         private boolean is_connected;
+        private final String client_socket_address;
 
 
         /**
@@ -123,6 +143,7 @@ public class ServerManager implements Runnable {
          */
         public FSClient(Socket socket) {
             client_socket = socket;
+            client_socket_address = client_socket.getRemoteSocketAddress().toString();
         }
 
 
@@ -160,40 +181,45 @@ public class ServerManager implements Runnable {
                         ));
                 // connect input and output streams for communication and send feedback to the client
                 setIO();
-                // TODO: remove next three output lines.
-                output.write("[server] You are connected to " + client_socket.getLocalSocketAddress());
-                output.newLine();
-                output.flush();
 
                 /* TODO: create a main loop. the main loop will listen for data from the client.*/
                 String message;
                 while (is_connected) {
                     message = input.readLine();
+                    if (message == null) {
+                        LogHelper.debugLog("Closing connection for " + client_socket.getRemoteSocketAddress());
+                        app.sendToConsole(LogHelper.log(
+                                "Closing connection for " + client_socket.getRemoteSocketAddress(),
+                                LogTypes.SERVER
+                        ));
+                        disconnect();
+                    }
                 }
             }
             catch (IOException e) {
                 e.printStackTrace();
             }
             finally {
-                LogHelper.debugLog("Closing connection for " + client_socket.getRemoteSocketAddress());
-                app.sendToConsole(LogHelper.log(
-                        "Closing connection for " + client_socket.getRemoteSocketAddress(),
-                        LogTypes.SERVER
-                        ));
-                closeAll(client_socket, input, output);
+                closeAll();
                 removeClient(this);
+                sendClientListUpdate();
             }
         }
 
 
         /**
-         * Properly close the client. Checking if each client is null before closing.
-         *
-         * @param socket the client socket.
-         * @param input the input stream of the client.
-         * @param output the output stream of the client.
+         * Returns the address of the client socket.
+         * @return The remote address of the client socket in String
          */
-        private void closeAll(Socket socket, BufferedReader input, BufferedWriter output) {
+        public String getClientSocketAddress() {
+            return client_socket_address;
+        }
+
+
+        /**
+         * Properly close the client. Checking if each client is null before closing.
+         */
+        private void closeAll() {
             try {
                 if (input != null) {
                     input.close();
@@ -201,8 +227,8 @@ public class ServerManager implements Runnable {
                 if (output != null) {
                     output.close();
                 }
-                if (socket != null) {
-                    socket.close();
+                if (client_socket != null) {
+                    client_socket.close();
                 }
             }
             catch (IOException ioe) {
@@ -212,7 +238,9 @@ public class ServerManager implements Runnable {
                         LogTypes.ERROR
                         ));
             }
-            app.sendToConsole(LogHelper.log("Connection has been closed.", LogTypes.SERVER));
+            app.sendToConsole(LogHelper.log(
+                    "Successfully closed connection for " + client_socket_address,
+                    LogTypes.SERVER));
         }
     }
 }
