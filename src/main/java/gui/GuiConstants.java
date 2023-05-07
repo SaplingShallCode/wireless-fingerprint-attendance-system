@@ -8,7 +8,8 @@ public class GuiConstants {
 
     public enum WindowSizes {
         MIN_HEIGHT(600),
-        MIN_WIDTH(800);
+        MIN_WIDTH(1000),
+        BORDERPANE_MARGIN(10);
 
         private final int value;
         WindowSizes(int value) {

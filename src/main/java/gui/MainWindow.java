@@ -224,8 +224,8 @@ public class MainWindow extends Application {
         root.setLeft(col1);
         root.setCenter(col2);
 
-        BorderPane.setMargin(col1, new Insets(10));
-        BorderPane.setMargin(col2, new Insets(10));
+        BorderPane.setMargin(col1, new Insets(GuiConstants.WindowSizes.BORDERPANE_MARGIN.getValue()));
+        BorderPane.setMargin(col2, new Insets(GuiConstants.WindowSizes.BORDERPANE_MARGIN.getValue()));
 
         // ----- Stage and Scene ----- //
         Scene scene = new Scene(root);
@@ -350,7 +350,7 @@ public class MainWindow extends Application {
                     row2,
                     row3
             );
-            BorderPane.setMargin(semi_root, new Insets(10));
+            BorderPane.setMargin(semi_root, new Insets(GuiConstants.WindowSizes.BORDERPANE_MARGIN.getValue()));
 
             // ----- Scene ----- //
             Scene scene = new Scene(root); // set the main layout of the scene.
