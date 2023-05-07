@@ -52,4 +52,28 @@ public class GuiConstants {
         }
     }
 
+    public enum Commands {
+        ENROLL(
+                "Register a fingerprint on a selected fingerprint client.",
+                "enroll"
+        );
+
+        private final String description;
+        private final String syntax;
+
+
+        Commands(String description, String syntax) {
+            this.description = description;
+            this.syntax = syntax;
+        }
+
+
+        public String getDescription() {
+            return description;
+        }
+        public String getSyntax() {
+            return syntax;
+        }
+    }
+
 }

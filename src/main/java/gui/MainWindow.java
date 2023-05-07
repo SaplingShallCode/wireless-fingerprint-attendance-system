@@ -1,6 +1,5 @@
 package gui;
 
-import server.Commands;
 import server.ServerManager;
 import javafx.application.Platform;
 import javafx.application.Application;
@@ -56,8 +55,8 @@ public class MainWindow extends Application {
     @Override
     public void init() {
         Platform.setImplicitExit(true); // close app when all windows are closed.
-        for (Commands command: Commands.values()) {
-            commands_list.add(command.getSyntax() + " - " + command.getDescription());
+        for (GuiConstants.Commands command: GuiConstants.Commands.values()) {
+            commands_list.add(command.getSyntax() + " : " + command.getDescription());
         }
     }
 
@@ -83,6 +82,10 @@ public class MainWindow extends Application {
                 // NOTE: if server_manager is null then a NullPointerException is thrown.
                 if (!server_manager.isClosed()) {
                     event.consume();
+                    sendToConsole(LogHelper.log(
+                            "The server is still running. Please close it first before exiting the app.",
+                            LogTypes.WARNING
+                            ));
                     Alert alert_window = new Alert(Alert.AlertType.WARNING);
                     alert_window.setTitle("Warning");
                     alert_window.setHeaderText("Server is still open...");
@@ -106,7 +109,7 @@ public class MainWindow extends Application {
      */
     @Override
     public void stop() {
-        System.out.println("Successfully close app.");
+        LogHelper.debugLog("Successfully close the app.");
     }
 
     /**
@@ -185,6 +188,7 @@ public class MainWindow extends Application {
         log_view.setFont(Font.font("Consolas"));
         log_view.setFocusTraversable(false);
         log_view.setEditable(false);
+        log_view.appendText("Wireless-Fingerprint-Based-Attendance-Logger-Server by NameGroup.\n\n");
 
         HBox command_group = new HBox();
         command_field = new TextField();
@@ -252,6 +256,10 @@ public class MainWindow extends Application {
     }
 
 
+    /**
+     * Update the list of clients that connected to the server.
+     * @param fsclients the list of clients to be displayed.
+     */
     public void updateClientsList(ArrayList<ServerManager.FSClient> fsclients) {
         Platform.runLater(() -> {
             clients_list.clear();
