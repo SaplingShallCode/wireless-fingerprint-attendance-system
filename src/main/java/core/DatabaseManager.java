@@ -1,4 +1,4 @@
-package server;
+package core;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.Connection;
