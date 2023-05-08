@@ -1,10 +1,10 @@
 package gui;
 
-import server.ServerManager;
 import javafx.application.Platform;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -13,10 +13,12 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
-import utility.LogHelper;
-import utility.LogTypes;
 import java.io.IOException;
 import java.util.ArrayList;
+import core.CommandExecutor;
+import core.ServerManager;
+import utility.LogHelper;
+import utility.LogTypes;
 
 
 /**
@@ -132,35 +134,12 @@ public class MainWindow extends Application {
 
         start_server_button = new Button("Start");
         start_server_button.setMaxWidth(Double.MAX_VALUE);
-        start_server_button.setOnAction(event -> {
-            try {
-                server_manager = new ServerManager(
-                        this,
-                        login_window.getHost(),
-                        login_window.getPort()
-                );
-                new Thread(server_manager).start();
-            }
-            catch (IOException ioe) {
-                sendToConsole(LogHelper.log("Error opening socket.", LogTypes.ERROR));
-            }
-            start_server_button.setDisable(true);
-            stop_server_button.setDisable(false);
-        });
+        start_server_button.setOnAction(this::start_server);
 
         stop_server_button = new Button("Stop");
         stop_server_button.setMaxWidth(Double.MAX_VALUE);
         stop_server_button.setDisable(true);
-        stop_server_button.setOnAction(event -> {
-            try {
-                server_manager.stopServer();
-            }
-            catch (IOException ioe) {
-                sendToConsole(LogHelper.log("Error when closing server.", LogTypes.ERROR));
-            }
-            stop_server_button.setDisable(true);
-            start_server_button.setDisable(false);
-        });
+        stop_server_button.setOnAction(this::stop_server);
 
         server_group.getChildren().addAll(
                 start_server_button,
@@ -194,15 +173,20 @@ public class MainWindow extends Application {
         command_field = new TextField();
         command_field.setMaxWidth(Double.MAX_VALUE);
         command_field.setOnKeyPressed( event -> {
+            // when user presses the Enter button on keyboard
             if (event.getCode() == KeyCode.ENTER) {
-                sendToConsole(LogHelper.log(command_field.getText(), LogTypes.CONSOLE));
+                String input = command_field.getText();
+                sendToConsole(LogHelper.log(input, LogTypes.CONSOLE));
+                CommandExecutor.execute(this, input);
                 command_field.clear();
             }
         });
 
         command_button = new Button("Enter");
         command_button.setOnAction( event -> {
-            sendToConsole(LogHelper.log(command_field.getText(), LogTypes.CONSOLE));
+            String input = command_field.getText();
+            sendToConsole(LogHelper.log(input, LogTypes.CONSOLE));
+            CommandExecutor.execute(this, input);
             command_field.clear();
         });
 
@@ -242,6 +226,57 @@ public class MainWindow extends Application {
 
 
     /**
+     * Calls the ServerManager to start the server.
+     * @param event the event fired by the app.
+     */
+    public void start_server(ActionEvent event) {
+        try {
+            server_manager = new ServerManager(
+                    this,
+                    login_window.getHost(),
+                    login_window.getPort()
+            );
+            new Thread(server_manager).start();
+        }
+        catch (IOException ioe) {
+            sendToConsole(LogHelper.log(
+                    "Error opening socket. The server may already be running in another process."
+                    , LogTypes.ERROR
+                    )
+            );
+        }
+        catch (IllegalArgumentException iae) {
+            sendToConsole(LogHelper.log(
+                    "Invalid hostname or port. The hostname is either null or the port is out of range.",
+                    LogTypes.ERROR
+                    )
+            );
+        }
+        start_server_button.setDisable(true);
+        stop_server_button.setDisable(false);
+    }
+
+    /**
+     * Calls the ServerManager to stop the server.
+     * @param event the event fired by the app.
+     */
+    public void stop_server(ActionEvent event) {
+        try {
+            if (server_manager == null ) {
+                sendToConsole(LogHelper.log("Server is null. Start the server first.", LogTypes.ERROR));
+                throw new IOException();
+            }
+            server_manager.stopServer();
+        }
+        catch (IOException ioe) {
+            sendToConsole(LogHelper.log("Error when closing server.", LogTypes.ERROR));
+        }
+        stop_server_button.setDisable(true);
+        start_server_button.setDisable(false);
+    }
+
+
+    /**
      * Append text to the console. This method is run in a thread to
      * avoid concurrency errors.
      *
@@ -249,8 +284,8 @@ public class MainWindow extends Application {
      */
     public void sendToConsole(String text) {
         if (text != null) {
-            Platform.runLater(() ->
-                log_view.appendText(text + "\n")
+            Platform.runLater(
+                    () -> log_view.appendText(text + "\n")
             );
         }
     }
@@ -261,12 +296,13 @@ public class MainWindow extends Application {
      * @param fsclients the list of clients to be displayed.
      */
     public void updateClientsList(ArrayList<ServerManager.FSClient> fsclients) {
-        Platform.runLater(() -> {
-            clients_list.clear();
-            for (ServerManager.FSClient c : fsclients) {
-                clients_list.add(c.getClientSocketAddress());
-            }
-        });
+        Platform.runLater(
+                () -> {
+                    clients_list.clear();
+                    for (ServerManager.FSClient c : fsclients) {
+                        clients_list.add(c.getClientSocketAddress());
+                    }
+                });
     }
 
 
