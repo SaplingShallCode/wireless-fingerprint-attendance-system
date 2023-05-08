@@ -59,26 +59,50 @@ public class GuiConstants {
     }
 
     public enum Commands {
+        START(
+                1,
+                "Starts the server.",
+                "start server",
+                "start server"
+        ),
+        STOP(
+                2,
+                "Stops the server.",
+                "stop server",
+                "stop server"
+        ),
         ENROLL(
+                3,
                 "Register a fingerprint on a selected fingerprint client.",
+                "enroll <client-name>",
                 "enroll"
         );
 
+        private final int id;
         private final String description;
         private final String syntax;
+        private final String reference;
 
 
-        Commands(String description, String syntax) {
+        Commands(int id, String description, String syntax, String reference) {
+            this.id = id;
             this.description = description;
             this.syntax = syntax;
+            this.reference = reference;
         }
 
 
+        public int getId() {
+            return id;
+        }
         public String getDescription() {
             return description;
         }
         public String getSyntax() {
             return syntax;
+        }
+        public String getReference() {
+            return reference;
         }
     }
 
