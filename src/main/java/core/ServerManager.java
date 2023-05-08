@@ -1,4 +1,4 @@
-package server;
+package core;
 
 import java.io.*;
 import java.net.*;
@@ -27,7 +27,7 @@ public class ServerManager implements Runnable {
      * @param port the fixed port number.
      * @exception IOException error when opening the socket.
      */
-    public ServerManager(MainWindow mw, String hostname, int port) throws IOException {
+    public ServerManager(MainWindow mw, String hostname, int port) throws IOException, IllegalArgumentException {
         app = mw;
         server_socket = new ServerSocket();
         SocketAddress address = new InetSocketAddress(hostname, port);
@@ -81,10 +81,15 @@ public class ServerManager implements Runnable {
 
     /**
      * Close the server.
+     * @throws IOException if an error occurs when closing the server.
      */
     public void stopServer() throws IOException {
-        app.sendToConsole(LogHelper.log("Closing server.", LogTypes.INFO));
+        if (!is_running) {
+            app.sendToConsole(LogHelper.log("Server is currently not running.", LogTypes.ERROR));
+            throw new IOException();
+        }
         is_running = false;
+        app.sendToConsole(LogHelper.log("Closing server.", LogTypes.INFO));
         if (server_socket != null) {
             server_socket.close();
         }
