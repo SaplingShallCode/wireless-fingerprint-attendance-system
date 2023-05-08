@@ -10,6 +10,7 @@ public enum LogTypes {
     DEBUG("DEBUG"),
     ERROR("ERROR"),
     INFO("INFO"),
+    INVALID("INVALID"),
     SERVER("SERVER"),
     WARNING("WARNING");
 
