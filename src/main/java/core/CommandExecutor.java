@@ -1,5 +1,6 @@
-package server;
+package core;
 
+import javafx.event.ActionEvent;
 import gui.GuiConstants;
 import gui.MainWindow;
 import utility.LogHelper;
@@ -15,13 +16,11 @@ public class CommandExecutor {
 
     /**
      * Check if an input is a valid command. Return the id of the command.
-     *
-     * @param app the MainWindow class.
      * @param input the user input to be checked.
      * @return the id of the command.
      * @see GuiConstants.Commands
      */
-    private static int checkValidCommand(MainWindow app ,String input) {
+    private static int checkValidCommand(String input) {
         int id;
         String reference;
         Pattern pattern;
@@ -38,7 +37,7 @@ public class CommandExecutor {
                 return id;
             }
         }
-
+        LogHelper.debugLog("Is invalid command: " + input);
         return 0;
     }
 
@@ -50,27 +49,24 @@ public class CommandExecutor {
      * @see GuiConstants.Commands
      */
     public static void execute(MainWindow app, String input) {
-        int id = checkValidCommand(app, input);
+        int id = checkValidCommand(input);
 
         switch (id) {
-            case 0:
+            case 0 -> {
                 LogHelper.debugLog("Not a valid command");
                 app.sendToConsole(LogHelper.log(
                         "Not a recognizable command. See list of available commands.", LogTypes.INVALID
                 ));
-                break;
-
-            case 1:
+            }
+            case 1 -> {
                 LogHelper.debugLog("Case 1: Start server");
-                break;
-
-            case 2:
+                app.start_server(new ActionEvent());
+            }
+            case 2 -> {
                 LogHelper.debugLog("Case 2: Stop server");
-                break;
-            case 3:
-                LogHelper.debugLog("Case 3: enroll");
-                break;
-
+                app.stop_server(new ActionEvent());
+            }
+            case 3 -> LogHelper.debugLog("Case 3: enroll");
         }
     }
 }
