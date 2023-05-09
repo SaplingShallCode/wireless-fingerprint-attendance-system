@@ -451,6 +451,7 @@ public class MainWindow extends Application {
      * @implNote Refer to the Launcher class when trying to run the program.
      * @param args terminal arguments.
      */
+    
     public static void main(String[] args) {
         launch(args);
     }
