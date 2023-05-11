@@ -53,6 +53,7 @@ public class MainWindow extends Application {
 
     /**
      * Initialize all resources needed for the application.
+     * @see GuiConstants.Commands for the commands being added.
      */
     @Override
     public void init() {
@@ -67,6 +68,7 @@ public class MainWindow extends Application {
      * The start method always runs after the init method.
      *
      * @param stage Provided by JavaFX application.
+     * @see LoginWindow for the login window implementation.
      */
     @Override
     public void start(Stage stage) {
@@ -113,6 +115,7 @@ public class MainWindow extends Application {
     public void stop() {
         LogHelper.debugLog("Successfully close the app.");
     }
+
 
     /**
      * initialize the UI of the application.
@@ -228,6 +231,7 @@ public class MainWindow extends Application {
     /**
      * Calls the ServerManager to start the server.
      * @param event the event fired by the app.
+     * @see ServerManager for its methods.
      */
     public void start_server(ActionEvent event) {
         try {
@@ -259,6 +263,7 @@ public class MainWindow extends Application {
     /**
      * Calls the ServerManager to stop the server.
      * @param event the event fired by the app.
+     * @see ServerManager for its methods.
      */
     public void stop_server(ActionEvent event) {
         try {
@@ -281,6 +286,9 @@ public class MainWindow extends Application {
      * avoid concurrency errors.
      *
      * @param text text to be appended.
+     * @implNote send to console's text parameter should be returned by
+     * LogHelper's log function.
+     * @see LogHelper for console logging.
      */
     public void sendToConsole(String text) {
         if (text != null) {
@@ -294,6 +302,7 @@ public class MainWindow extends Application {
     /**
      * Update the list of clients that connected to the server.
      * @param fsclients the list of clients to be displayed.
+     * @see ServerManager for the list of clients in the fsclients array list.
      */
     public void updateClientsList(ArrayList<ServerManager.FSClient> fsclients) {
         Platform.runLater(
@@ -322,9 +331,9 @@ public class MainWindow extends Application {
         Label port_label;
         TextField port_textfield;
 
+
         /**
          * Instantiate a LoginWindow object.
-         *
          * @param stage the stage object. should be undecorated.
          */
         LoginWindow (Stage stage) {
@@ -335,7 +344,7 @@ public class MainWindow extends Application {
 
 
         /**
-         * Initialize the UI of the window.
+         * Initialize the UI of the login window.
          */
         public void initUI() {
             // ----- Row 1 ----- //
@@ -409,7 +418,6 @@ public class MainWindow extends Application {
 
         /**
          * Get the host input from the text field.
-         *
          * @return the host to be bound to.
          */
         public String getHost() {
@@ -419,7 +427,6 @@ public class MainWindow extends Application {
 
         /**
          * Get the port input from the text field.
-         *
          * @return the port to be bound to
          */
         public int getPort() {
