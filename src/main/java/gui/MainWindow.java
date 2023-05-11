@@ -74,8 +74,8 @@ public class MainWindow extends Application {
     public void start(Stage stage) {
         login_window = new LoginWindow(new Stage());
         login_window.initUI();
-        login_window.handleClose();
-        login_window.showAndWait();
+        login_window.handleClose(); // implement the close event of the login window
+        login_window.showAndWait(); // blocking method
 
         primary_stage = stage;
         initUI();
@@ -104,7 +104,12 @@ public class MainWindow extends Application {
                 Platform.exit();
             }
         });
-        primary_stage.show();
+        // if the user clicks the 'X' button on the login window then this
+        // if-block will be skipped. the user must click the 'Enter' button
+        // to continue to the main app.
+        if (!login_window.getWillExitApp()) {
+            primary_stage.show();
+        }
     }
 
 
@@ -326,6 +331,7 @@ public class MainWindow extends Application {
         private final Stage login_stage;
         private boolean host_is_valid = true;
         private boolean port_is_valid = true;
+        private boolean willExitApp;
 
         // components
         Label host_label;
@@ -403,6 +409,7 @@ public class MainWindow extends Application {
                 // Assign the text inputs from the text fields to the respective variables.
                 host = host_textfield.getText();
                 port = Integer.parseInt(port_textfield.getText());
+                willExitApp = false;
                 closeWindow();
             });
 
@@ -446,7 +453,7 @@ public class MainWindow extends Application {
          */
         public void handleClose() {
             login_stage.setOnCloseRequest(event ->
-                Platform.exit()
+                willExitApp = true
             );
         }
 
@@ -480,9 +487,21 @@ public class MainWindow extends Application {
 
         /**
          * Closes the window/stage.
+         * @implNote Only used by the enter button.
          */
         public void closeWindow() {
             login_stage.close();
+        }
+
+
+        /**
+         * Get the boolean value of the user's exit choice.
+         * @return True if app will exit.
+         * @implNote The return value will determine if the main window will
+         * show or just skip to closing the application.
+         */
+        public boolean getWillExitApp() {
+            return willExitApp;
         }
     }
 
