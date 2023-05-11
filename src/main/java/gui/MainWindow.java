@@ -324,12 +324,15 @@ public class MainWindow extends Application {
         private int port;
         private String host;
         private final Stage login_stage;
+        private boolean host_is_valid = true;
+        private boolean port_is_valid = true;
 
         // components
         Label host_label;
         TextField host_textfield;
         Label port_label;
         TextField port_textfield;
+        Button enter_button;
 
 
         /**
@@ -355,7 +358,14 @@ public class MainWindow extends Application {
             host_label.setPrefWidth(GuiConstants.LoginWindowSizes.LABEL_WIDTH.getValue());
 
             host_textfield = new TextField("0.0.0.0");
+            host_textfield.setPromptText("Default: 0.0.0.0"); // placeholder text
             host_textfield.setPrefWidth(GuiConstants.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
+            host_textfield.textProperty().addListener((observable, old_value, new_value) -> {
+                host_is_valid = host_textfield.getText().matches(
+                        "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$"
+                );
+                changeButtonState();
+            });
             row1.getChildren().addAll(host_label, host_textfield);
 
             // ----- Row 2 ----- //
@@ -366,14 +376,27 @@ public class MainWindow extends Application {
             port_label.setPrefWidth(GuiConstants.LoginWindowSizes.LABEL_WIDTH.getValue());
 
             port_textfield = new TextField("62609");
+            port_textfield.setPromptText("Default: 62609"); // placeholder text
+            port_textfield.setTooltip(new Tooltip("Valid port range is between 49152 to 65535."));
             port_textfield.setPrefWidth(GuiConstants.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
+            port_textfield.textProperty().addListener((observable, old_value, new_value) -> {
+                port_is_valid = port_textfield.getText().matches(
+                        "^(49[1-9][5-9][2-9]|"      +
+                                "5[0-9][0-9][0-9][0-9]|"  +
+                                "6[0-4][0-9]{3}|"         +
+                                "65[0-4][0-9]{2}|"        +
+                                "655[0-2][0-9]|"          +
+                                "6553[0-5])$"
+                );
+                changeButtonState();
+            });
             row2.getChildren().addAll(port_label, port_textfield);
 
             // ----- Row 3 ----- //
             HBox row3 = new HBox();
             row3.setAlignment(Pos.CENTER);
 
-            Button enter_button = new Button("Enter");
+            enter_button = new Button("Enter");
             enter_button.setMaxWidth(Double.MAX_VALUE);
             row3.getChildren().addAll(enter_button);
             enter_button.setOnAction(e -> {
@@ -403,6 +426,18 @@ public class MainWindow extends Application {
             login_stage.setHeight(GuiConstants.LoginWindowSizes.PRIMARY_HEIGHT.getValue());
             login_stage.setTitle(GuiConstants.StringValues.LOGIN_WINDOW_TITLE.getValue());
             login_stage.setScene(scene); // set the main scene.
+        }
+
+
+        /**
+         * Changes the button state.
+         * @implNote this method is called after checking the host and port inputs.
+         */
+        public void changeButtonState() {
+            enter_button.setDisable(true);
+            if (host_is_valid && port_is_valid) {
+                enter_button.setDisable(false);
+            }
         }
 
 
