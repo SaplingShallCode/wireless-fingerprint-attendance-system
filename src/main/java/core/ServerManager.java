@@ -14,7 +14,7 @@ import utility.LogTypes;
  * handle multiple clients. The server will serve clients data from
  * the database and also update the database data.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "noinspection", "LoopConditionNotUpdatedInsideLoop", "StatementWithEmptyBody"})
 public class ServerManager implements Runnable {
     private final ServerSocket server_socket;
     private final ArrayList<FSClient> fsclients = new ArrayList<>();
@@ -68,6 +68,9 @@ public class ServerManager implements Runnable {
                         LogHelper.debugLog("client state: " + client.is_connected);
                     }
                 }
+
+                // wait for all clients to be removed before proceeding
+                while (fsclients.size() != 0);
             }
             finally {
                 sendClientListUpdate();
