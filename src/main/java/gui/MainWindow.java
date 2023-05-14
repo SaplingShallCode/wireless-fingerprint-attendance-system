@@ -319,8 +319,8 @@ public class MainWindow extends Application {
         Platform.runLater(
                 () -> {
                     clients_list.clear();
-                    for (ServerManager.FSClient c : fsclients) {
-                        clients_list.add(c.getClientSocketAddress());
+                    for (ServerManager.FSClient client : fsclients) {
+                        clients_list.add(client.getClientName());
                     }
                 });
     }
