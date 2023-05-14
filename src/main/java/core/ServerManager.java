@@ -3,7 +3,10 @@ package core;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
+
 import gui.MainWindow;
+import utility.Const;
 import utility.LogHelper;
 import utility.LogTypes;
 
@@ -144,6 +147,7 @@ public class ServerManager implements Runnable {
         private BufferedWriter output;
         private boolean is_connected;
         private final String client_socket_address;
+        private final String client_name;
 
 
         /**
@@ -152,6 +156,7 @@ public class ServerManager implements Runnable {
         public FSClient(Socket socket) {
             client_socket = socket;
             client_socket_address = client_socket.getRemoteSocketAddress().toString();
+            client_name = generateClientName();
         }
 
 
@@ -231,6 +236,11 @@ public class ServerManager implements Runnable {
         }
 
 
+        public String getClientName() {
+            return client_name;
+        }
+
+
         /**
          * Properly close the client. Checking if each client is null before closing.
          */
@@ -268,6 +278,46 @@ public class ServerManager implements Runnable {
             app.sendToConsole(LogHelper.log(
                     "Successfully closed connection for " + client_socket_address,
                     LogTypes.SERVER));
+        }
+
+
+        /**
+         * Generate an 8-character client name.
+         * @return the generated client name.
+         * @implNote this method is only used in the constructor of the client.
+         */
+        private String generateClientName() {
+            int random_int;
+            char random_character;
+            StringBuilder generated_client_name = new StringBuilder();
+
+            for (int i = 0; i < 8; i++) {
+                random_int = ThreadLocalRandom.current().nextInt(0, Const.CHARSET.length() + 1);
+                random_character = Const.CHARSET.charAt(random_int);
+                generated_client_name.append(random_character);
+            }
+
+            LogHelper.debugLog(generated_client_name.toString());
+
+            return generated_client_name.toString();
+        }
+
+
+        /**
+         * Send a command to the client.
+         * This method is primarily used by the CommandExecutor class.
+         * @param command the command to be sent.
+         * @see CommandExecutor
+         */
+        public void sendCommand(String command) {
+            try {
+                output.write(command);
+                output.newLine();
+                output.flush();
+            }
+            catch (IOException ioe) {
+                app.sendToConsole(LogHelper.log("Error sending command to " + client_name, LogTypes.ERROR));
+            }
         }
     }
 }
