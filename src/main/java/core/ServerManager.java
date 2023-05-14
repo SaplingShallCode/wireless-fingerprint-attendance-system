@@ -311,8 +311,7 @@ public class ServerManager implements Runnable {
          */
         public void sendCommand(String command) {
             try {
-                output.write(command);
-                output.newLine();
+                output.write(command + "\n");
                 output.flush();
             }
             catch (IOException ioe) {
