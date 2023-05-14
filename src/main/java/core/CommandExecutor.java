@@ -91,11 +91,14 @@ public class CommandExecutor {
      * @return the client.
      * @throws NullPointerException error when the client is not found or does not exist.
      */
-    private static ServerManager.FSClient findClient(ServerManager server_manager, String client_to_find)
+    private static ServerManager.FSClient findClient(MainWindow app, ServerManager server_manager, String client_to_find)
     throws NullPointerException {
         ArrayList<ServerManager.FSClient> fsclients = server_manager.getClients();
+        String client_name;
         for (ServerManager.FSClient client : fsclients) {
-            if (client_to_find.equals(client.getClientName())) {
+            client_name = client.getClientName();
+            if (client_to_find.equals(client_name)) {
+                app.sendToConsole(LogHelper.log(client_name + " found!", LogTypes.INFO));
                 return client;
             }
         }
@@ -138,7 +141,7 @@ public class CommandExecutor {
                     break;
                 }
                 try {
-                    client = findClient(server_manager, client_to_find);
+                    client = findClient(app, server_manager, client_to_find);
                     finger_id = Integer.parseInt(new StringBuilder(input).substring(16));
                     if (finger_id < 1) {
                         throw new NumberFormatException();
@@ -163,7 +166,7 @@ public class CommandExecutor {
                     break;
                 }
 
-                client.sendCommand("enroll");
+                client.sendCommand("enroll\n" + finger_id);
             }
         }
     }
