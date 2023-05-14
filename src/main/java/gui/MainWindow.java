@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import core.CommandExecutor;
 import core.ServerManager;
+import utility.Const;
 import utility.LogHelper;
 import utility.LogTypes;
 
@@ -53,12 +54,12 @@ public class MainWindow extends Application {
 
     /**
      * Initialize all resources needed for the application.
-     * @see GuiConstants.Commands for the commands being added.
+     * @see Const.Commands for the commands being added.
      */
     @Override
     public void init() {
         Platform.setImplicitExit(true); // close app when all windows are closed.
-        for (GuiConstants.Commands command: GuiConstants.Commands.values()) {
+        for (Const.Commands command: Const.Commands.values()) {
             commands_list.add(command.getSyntax() + " : " + command.getDescription());
         }
     }
@@ -216,19 +217,19 @@ public class MainWindow extends Application {
         root.setLeft(col1);
         root.setCenter(col2);
 
-        BorderPane.setMargin(col1, new Insets(GuiConstants.WindowSizes.BORDERPANE_MARGIN.getValue()));
-        BorderPane.setMargin(col2, new Insets(GuiConstants.WindowSizes.BORDERPANE_MARGIN.getValue()));
+        BorderPane.setMargin(col1, new Insets(Const.WindowSizes.BORDERPANE_MARGIN.getValue()));
+        BorderPane.setMargin(col2, new Insets(Const.WindowSizes.BORDERPANE_MARGIN.getValue()));
 
         // ----- Stage and Scene ----- //
         Scene scene = new Scene(root);
         command_field.requestFocus();
-        scene.getStylesheets().add(GuiConstants.StringValues.STYLESHEET_PATH.getValue());
+        scene.getStylesheets().add(Const.StringValues.STYLESHEET_PATH.getValue());
 
-        primary_stage.setHeight(GuiConstants.WindowSizes.MIN_HEIGHT.getValue());
-        primary_stage.setWidth(GuiConstants.WindowSizes.MIN_WIDTH.getValue());
-        primary_stage.setMinHeight(GuiConstants.WindowSizes.MIN_HEIGHT.getValue());
-        primary_stage.setMinWidth(GuiConstants.WindowSizes.MIN_WIDTH.getValue());
-        primary_stage.setTitle(GuiConstants.StringValues.WINDOW_TITLE.getValue());
+        primary_stage.setHeight(Const.WindowSizes.MIN_HEIGHT.getValue());
+        primary_stage.setWidth(Const.WindowSizes.MIN_WIDTH.getValue());
+        primary_stage.setMinHeight(Const.WindowSizes.MIN_HEIGHT.getValue());
+        primary_stage.setMinWidth(Const.WindowSizes.MIN_WIDTH.getValue());
+        primary_stage.setTitle(Const.StringValues.WINDOW_TITLE.getValue());
         primary_stage.setScene(scene);
     }
 
@@ -366,11 +367,11 @@ public class MainWindow extends Application {
             row1.setAlignment(Pos.CENTER);
 
             host_label = new Label("Bind to host:");
-            host_label.setPrefWidth(GuiConstants.LoginWindowSizes.LABEL_WIDTH.getValue());
+            host_label.setPrefWidth(Const.LoginWindowSizes.LABEL_WIDTH.getValue());
 
             host_textfield = new TextField("0.0.0.0");
             host_textfield.setPromptText("Default: 0.0.0.0"); // placeholder text
-            host_textfield.setPrefWidth(GuiConstants.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
+            host_textfield.setPrefWidth(Const.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
             host_textfield.textProperty().addListener((observable, old_value, new_value) -> {
                 host_is_valid = host_textfield.getText().matches(
                         "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$"
@@ -384,12 +385,12 @@ public class MainWindow extends Application {
             row2.setAlignment(Pos.CENTER);
 
             port_label = new Label("Bind to port: ");
-            port_label.setPrefWidth(GuiConstants.LoginWindowSizes.LABEL_WIDTH.getValue());
+            port_label.setPrefWidth(Const.LoginWindowSizes.LABEL_WIDTH.getValue());
 
             port_textfield = new TextField("62609");
             port_textfield.setPromptText("Default: 62609"); // placeholder text
             port_textfield.setTooltip(new Tooltip("Valid port range is between 49152 to 65535."));
-            port_textfield.setPrefWidth(GuiConstants.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
+            port_textfield.setPrefWidth(Const.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
             port_textfield.textProperty().addListener((observable, old_value, new_value) -> {
                 port_is_valid = port_textfield.getText().matches(
                         "^(49[1-9][5-9][2-9]|"      +
@@ -430,13 +431,13 @@ public class MainWindow extends Application {
                     row2,
                     row3
             );
-            BorderPane.setMargin(semi_root, new Insets(GuiConstants.WindowSizes.BORDERPANE_MARGIN.getValue()));
+            BorderPane.setMargin(semi_root, new Insets(Const.WindowSizes.BORDERPANE_MARGIN.getValue()));
 
             // ----- Scene ----- //
             Scene scene = new Scene(root); // set the main layout of the scene.
-            login_stage.setWidth(GuiConstants.LoginWindowSizes.PRIMARY_WIDTH.getValue());
-            login_stage.setHeight(GuiConstants.LoginWindowSizes.PRIMARY_HEIGHT.getValue());
-            login_stage.setTitle(GuiConstants.StringValues.LOGIN_WINDOW_TITLE.getValue());
+            login_stage.setWidth(Const.LoginWindowSizes.PRIMARY_WIDTH.getValue());
+            login_stage.setHeight(Const.LoginWindowSizes.PRIMARY_HEIGHT.getValue());
+            login_stage.setTitle(Const.StringValues.LOGIN_WINDOW_TITLE.getValue());
             login_stage.setScene(scene); // set the main scene.
         }
 

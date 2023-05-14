@@ -1,15 +1,15 @@
-package gui;
+package utility;
 
 /**
- * The GuiConstants class contains all the constant variables to be used
+ * The Const class contains all the constant variables to be used
  * by the classes contained in the current package
  */
-public class GuiConstants {
+public class Const {
 
     /**
      * Disable instantiation of this object.
      */
-    private GuiConstants() {}
+    private Const() {}
 
     public enum WindowSizes {
         MIN_HEIGHT(600),
