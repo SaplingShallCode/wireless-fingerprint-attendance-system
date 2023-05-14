@@ -292,7 +292,7 @@ public class ServerManager implements Runnable {
             StringBuilder generated_client_name = new StringBuilder();
 
             for (int i = 0; i < 8; i++) {
-                random_int = ThreadLocalRandom.current().nextInt(0, Const.CHARSET.length() + 1);
+                random_int = ThreadLocalRandom.current().nextInt(0, Const.CHARSET.length());
                 random_character = Const.CHARSET.charAt(random_int);
                 generated_client_name.append(random_character);
             }
