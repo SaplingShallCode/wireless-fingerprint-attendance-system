@@ -11,6 +11,10 @@ public class Const {
      */
     private Const() {}
 
+
+    public static final String CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+
     public enum WindowSizes {
         MIN_HEIGHT(600),
         MIN_WIDTH(1000),
@@ -25,6 +29,7 @@ public class Const {
             return value;
         }
     }
+
 
     public enum StringValues {
         WINDOW_TITLE("Wireless Fingerprint-based Attendance Logger Server by NameGroup"),
@@ -42,6 +47,7 @@ public class Const {
         }
     }
 
+
     public enum LoginWindowSizes {
         PRIMARY_WIDTH(300),
         PRIMARY_HEIGHT(150),
@@ -58,6 +64,7 @@ public class Const {
         }
     }
 
+
     public enum Commands {
         START(
                 1,
@@ -73,8 +80,8 @@ public class Const {
         ),
         ENROLL(
                 3,
-                "Register a fingerprint on a selected fingerprint client.",
-                "enroll <client-name>",
+                "Register a fingerprint on a selected fingerprint client. Id must be greater than 0.",
+                "enroll <client-name> <id>",
                 "enroll"
         );
 
