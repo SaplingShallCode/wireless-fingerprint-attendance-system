@@ -272,7 +272,7 @@ public class MainWindow extends Application {
      */
     public void stop_server(ActionEvent event) {
         try {
-            if (server_manager == null ) {
+            if (server_manager == null) {
                 sendToConsole(LogHelper.log("Server is null. Start the server first.", LogTypes.ERROR));
                 throw new IOException();
             }
@@ -283,6 +283,11 @@ public class MainWindow extends Application {
         }
         stop_server_button.setDisable(true);
         start_server_button.setDisable(false);
+    }
+
+
+    public ServerManager getServerManager() {
+        return server_manager;
     }
 
 
