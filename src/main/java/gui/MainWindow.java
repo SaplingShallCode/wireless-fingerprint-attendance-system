@@ -5,13 +5,14 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
-import javafx.geometry.Insets;
+import javafx.util.Duration;
 import java.io.IOException;
 import java.util.ArrayList;
 import core.CommandExecutor;
@@ -135,6 +136,7 @@ public class MainWindow extends Application {
 
         clients_listlabel = new Label("Connected clients:");
         clients_listview = new ListView<>(clients_list);
+        clients_listview.setCellFactory(param -> new ClientCell()); // See nested ClientCell class below.
         clients_listview.setFocusTraversable(false);
 
         HBox server_group = new HBox();
@@ -322,6 +324,60 @@ public class MainWindow extends Application {
                         clients_list.add(client.getClientName());
                     }
                 });
+    }
+
+
+    /**
+     * The ClientCell is a custom cell used by the clients_list_view object
+     * which adds two buttons. One for enrolling and disconnecting from a
+     * client.
+     */
+    private class ClientCell extends ListCell<String> {
+        private final Label item_name;
+        private final Button enroll_button;
+        private final Button disconnect_button;
+        private final GridPane grid;
+        private final Tooltip enroll_tooltip;
+        private final Tooltip disconnect_tooltip;
+
+        public ClientCell() {
+            super();
+
+            enroll_tooltip = new Tooltip("Enroll");
+            enroll_tooltip.setShowDelay(Duration.ZERO);
+            disconnect_tooltip = new Tooltip("Disconnect");
+            disconnect_tooltip.setShowDelay(Duration.ZERO);
+
+            enroll_button = new Button("E");
+            enroll_button.setTooltip(enroll_tooltip);
+            enroll_button.setMaxWidth(Double.MAX_VALUE);
+
+            disconnect_button = new Button("X");
+            disconnect_button.setTooltip(disconnect_tooltip);
+            disconnect_button.setMaxWidth(Double.MAX_VALUE);
+
+            item_name = new Label();
+            item_name.setMaxWidth(Double.MAX_VALUE);
+
+            GridPane.setHgrow(item_name, Priority.ALWAYS);
+            grid = new GridPane();
+            grid.add(item_name, 0, 0);
+            grid.add(enroll_button, 1, 0);
+            grid.add(disconnect_button, 2, 0);
+        }
+
+        @Override
+        public void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(null);
+            setEditable(false);
+            setGraphic(null);
+            if (item != null) {
+                item_name.setText(item);
+                setGraphic(grid);
+            }
+
+        }
     }
 
 
