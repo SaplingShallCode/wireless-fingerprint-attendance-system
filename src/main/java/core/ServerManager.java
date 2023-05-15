@@ -3,7 +3,10 @@ package core;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
+
 import gui.MainWindow;
+import utility.Const;
 import utility.LogHelper;
 import utility.LogTypes;
 
@@ -14,7 +17,7 @@ import utility.LogTypes;
  * handle multiple clients. The server will serve clients data from
  * the database and also update the database data.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "noinspection", "LoopConditionNotUpdatedInsideLoop", "StatementWithEmptyBody"})
 public class ServerManager implements Runnable {
     private final ServerSocket server_socket;
     private final ArrayList<FSClient> fsclients = new ArrayList<>();
@@ -64,16 +67,19 @@ public class ServerManager implements Runnable {
                                 "Closing connection for " + client.getClientSocketAddress(),
                                 LogTypes.INFO
                         ));
-                        client.closeAll();
-                        removeClient(client);
+                        client.disconnect();
+                        LogHelper.debugLog("client state: " + client.is_connected);
                     }
                 }
-                app.sendToConsole(LogHelper.log("All client sockets have been closed.", LogTypes.INFO));
-                app.sendToConsole(LogHelper.log("Server sucessfully closed.", LogTypes.INFO));
-                LogHelper.debugLog("Server stopped.");
+
+                // wait for all clients to be removed before proceeding
+                while (fsclients.size() != 0);
             }
             finally {
                 sendClientListUpdate();
+                app.sendToConsole(LogHelper.log("All client sockets have been closed.", LogTypes.INFO));
+                app.sendToConsole(LogHelper.log("Server sucessfully closed.", LogTypes.INFO));
+                LogHelper.debugLog("Server stopped.");
             }
         }
     }
@@ -141,6 +147,7 @@ public class ServerManager implements Runnable {
         private BufferedWriter output;
         private boolean is_connected;
         private final String client_socket_address;
+        private final String client_name;
 
 
         /**
@@ -149,6 +156,7 @@ public class ServerManager implements Runnable {
         public FSClient(Socket socket) {
             client_socket = socket;
             client_socket_address = client_socket.getRemoteSocketAddress().toString();
+            client_name = generateClientName();
         }
 
 
@@ -170,7 +178,7 @@ public class ServerManager implements Runnable {
         /**
          * Disconnect the client from the server.
          */
-        private void disconnect() {
+        public void disconnect() {
             is_connected = false;
         }
 
@@ -179,25 +187,32 @@ public class ServerManager implements Runnable {
         public void run() {
             is_connected = true;
             try {
-                LogHelper.debugLog("Just connected to client " + client_socket.getRemoteSocketAddress());
+                LogHelper.debugLog("Just connected to client " + client_socket_address);
                 app.sendToConsole(LogHelper.log(
-                        "Just connected to client " + client_socket.getRemoteSocketAddress(),
+                        "Just connected to client " + client_socket_address,
                         LogTypes.SERVER
                         ));
                 // connect input and output streams for communication and send feedback to the client
                 setIO();
 
-                /* TODO: create a main loop. the main loop will listen for data from the client.*/
+                // The client mainloop.
                 String message;
                 while (is_connected) {
-                    message = input.readLine();
-                    if (message == null) {
-                        LogHelper.debugLog("Closing connection for " + client_socket.getRemoteSocketAddress());
-                        app.sendToConsole(LogHelper.log(
-                                "Closing connection for " + client_socket.getRemoteSocketAddress(),
-                                LogTypes.SERVER
-                        ));
-                        disconnect();
+
+                    // detect if the input buffer is not empty.
+                    if (input.ready()) {
+                        message = input.readLine();
+                        app.sendToConsole(LogHelper.log(message, LogTypes.CLIENT));
+
+                        // detect if a client disconnects.
+                        if (message.equals("disconnect")) {
+                            LogHelper.debugLog("Closing connection for " + client_socket_address);
+                            app.sendToConsole(LogHelper.log(
+                                    "Closing connection for " + client_socket_address,
+                                    LogTypes.SERVER
+                            ));
+                            disconnect();
+                        }
                     }
                 }
             }
@@ -221,18 +236,35 @@ public class ServerManager implements Runnable {
         }
 
 
+        public String getClientName() {
+            return client_name;
+        }
+
+
         /**
          * Properly close the client. Checking if each client is null before closing.
          */
         private void closeAll() {
             try {
                 if (input != null) {
+                    app.sendToConsole(LogHelper.log(
+                            "Closing input for " + client_socket_address,
+                            LogTypes.SERVER
+                    ));
                     input.close();
                 }
                 if (output != null) {
+                    app.sendToConsole(LogHelper.log(
+                            "Closing output for " + client_socket_address,
+                            LogTypes.SERVER
+                    ));
                     output.close();
                 }
                 if (client_socket != null) {
+                    app.sendToConsole(LogHelper.log(
+                            "Closing socket for" + client_socket_address,
+                            LogTypes.SERVER
+                    ));
                     client_socket.close();
                 }
             }
@@ -246,6 +278,45 @@ public class ServerManager implements Runnable {
             app.sendToConsole(LogHelper.log(
                     "Successfully closed connection for " + client_socket_address,
                     LogTypes.SERVER));
+        }
+
+
+        /**
+         * Generate an 8-character client name.
+         * @return the generated client name.
+         * @implNote this method is only used in the constructor of the client.
+         */
+        private String generateClientName() {
+            int random_int;
+            char random_character;
+            StringBuilder generated_client_name = new StringBuilder();
+
+            for (int i = 0; i < 8; i++) {
+                random_int = ThreadLocalRandom.current().nextInt(0, Const.CHARSET.length());
+                random_character = Const.CHARSET.charAt(random_int);
+                generated_client_name.append(random_character);
+            }
+
+            LogHelper.debugLog(generated_client_name.toString());
+
+            return generated_client_name.toString();
+        }
+
+
+        /**
+         * Send a command to the client.
+         * This method is primarily used by the CommandExecutor class.
+         * @param command the command to be sent.
+         * @see CommandExecutor
+         */
+        public void sendCommand(String command) {
+            try {
+                output.write(command + "\n");
+                output.flush();
+            }
+            catch (IOException ioe) {
+                app.sendToConsole(LogHelper.log("Error sending command to " + client_name, LogTypes.ERROR));
+            }
         }
     }
 }

@@ -2,7 +2,10 @@
 [![forthebadge](https://forthebadge.com/images/badges/made-with-java.svg)](https://forthebadge.com)
 
 A fingerprint attendance logging system that utilizes
-sockets.
+sockets.    
+
+**Note:** This repo only contains the server code.
+See also the client [repo](https://github.com/Chewycide/client-for-wireless-fingerprint-attendance-system).
 
 ---
 
@@ -12,3 +15,10 @@ sockets.
 - Go to GitHub, click on the `< > Code` button and copy the HTTPS url.
 - Paste it on the URL field in IntelliJ and specify a project directory.
 - Then `clone` the project.
+
+---
+
+### See also:
+The client 
+[repo](https://github.com/Chewycide/client-for-wireless-fingerprint-attendance-system) 
+for this project.

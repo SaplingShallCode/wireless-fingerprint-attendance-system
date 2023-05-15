@@ -5,18 +5,19 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
-import javafx.geometry.Pos;
-import javafx.geometry.Insets;
+import javafx.util.Duration;
 import java.io.IOException;
 import java.util.ArrayList;
 import core.CommandExecutor;
 import core.ServerManager;
+import utility.Const;
 import utility.LogHelper;
 import utility.LogTypes;
 import javafx.scene.image.Image;
@@ -56,11 +57,12 @@ public class MainWindow extends Application {
 
     /**
      * Initialize all resources needed for the application.
+     * @see Const.Commands for the commands being added.
      */
     @Override
     public void init() {
         Platform.setImplicitExit(true); // close app when all windows are closed.
-        for (GuiConstants.Commands command: GuiConstants.Commands.values()) {
+        for (Const.Commands command: Const.Commands.values()) {
             commands_list.add(command.getSyntax() + " : " + command.getDescription());
         }
     }
@@ -70,13 +72,14 @@ public class MainWindow extends Application {
      * The start method always runs after the init method.
      *
      * @param stage Provided by JavaFX application.
+     * @see LoginWindow for the login window implementation.
      */
     @Override
     public void start(Stage stage) {
         login_window = new LoginWindow(new Stage());
         login_window.initUI();
-        login_window.handleClose();
-        login_window.showAndWait();
+        login_window.handleClose(); // implement the close event of the login window
+        login_window.showAndWait(); // blocking method
 
         primary_stage = stage;
         initUI();
@@ -105,7 +108,12 @@ public class MainWindow extends Application {
                 Platform.exit();
             }
         });
-        primary_stage.show();
+        // if the user clicks the 'X' button on the login window then this
+        // if-block will be skipped. the user must click the 'Enter' button
+        // to continue to the main app.
+        if (!login_window.getWillExitApp()) {
+            primary_stage.show();
+        }
     }
 
 
@@ -116,6 +124,7 @@ public class MainWindow extends Application {
     public void stop() {
         LogHelper.debugLog("Successfully close the app.");
     }
+
 
     /**
      * initialize the UI of the application.
@@ -130,6 +139,7 @@ public class MainWindow extends Application {
 
         clients_listlabel = new Label("Connected clients:");
         clients_listview = new ListView<>(clients_list);
+        clients_listview.setCellFactory(param -> new ClientCell()); // See nested ClientCell class below.
         clients_listview.setFocusTraversable(false);
 
         HBox server_group = new HBox();
@@ -211,19 +221,19 @@ public class MainWindow extends Application {
         root.setLeft(col1);
         root.setCenter(col2);
 
-        BorderPane.setMargin(col1, new Insets(GuiConstants.WindowSizes.BORDERPANE_MARGIN.getValue()));
-        BorderPane.setMargin(col2, new Insets(GuiConstants.WindowSizes.BORDERPANE_MARGIN.getValue()));
+        BorderPane.setMargin(col1, new Insets(Const.WindowSizes.BORDERPANE_MARGIN.getValue()));
+        BorderPane.setMargin(col2, new Insets(Const.WindowSizes.BORDERPANE_MARGIN.getValue()));
 
         // ----- Stage and Scene ----- //
         Scene scene = new Scene(root);
         command_field.requestFocus();
-        scene.getStylesheets().add(GuiConstants.StringValues.STYLESHEET_PATH.getValue());
+        scene.getStylesheets().add(Const.StringValues.STYLESHEET_PATH.getValue());
 
-        primary_stage.setHeight(GuiConstants.WindowSizes.MIN_HEIGHT.getValue());
-        primary_stage.setWidth(GuiConstants.WindowSizes.MIN_WIDTH.getValue());
-        primary_stage.setMinHeight(GuiConstants.WindowSizes.MIN_HEIGHT.getValue());
-        primary_stage.setMinWidth(GuiConstants.WindowSizes.MIN_WIDTH.getValue());
-        primary_stage.setTitle(GuiConstants.StringValues.WINDOW_TITLE.getValue());
+        primary_stage.setHeight(Const.WindowSizes.MIN_HEIGHT.getValue());
+        primary_stage.setWidth(Const.WindowSizes.MIN_WIDTH.getValue());
+        primary_stage.setMinHeight(Const.WindowSizes.MIN_HEIGHT.getValue());
+        primary_stage.setMinWidth(Const.WindowSizes.MIN_WIDTH.getValue());
+        primary_stage.setTitle(Const.StringValues.WINDOW_TITLE.getValue());
         primary_stage.setScene(scene);
         Image icon = new Image("C:\\Users\\Janel M. Antolin\\git\\wireless-fingerprint-attendance-system\\src\\main\\java\\gui\\icon.png");
         primary_stage.getIcons().add(icon);
@@ -234,6 +244,7 @@ public class MainWindow extends Application {
     /**
      * Calls the ServerManager to start the server.
      * @param event the event fired by the app.
+     * @see ServerManager for its methods.
      */
     public void start_server(ActionEvent event) {
         try {
@@ -265,10 +276,11 @@ public class MainWindow extends Application {
     /**
      * Calls the ServerManager to stop the server.
      * @param event the event fired by the app.
+     * @see ServerManager for its methods.
      */
     public void stop_server(ActionEvent event) {
         try {
-            if (server_manager == null ) {
+            if (server_manager == null) {
                 sendToConsole(LogHelper.log("Server is null. Start the server first.", LogTypes.ERROR));
                 throw new IOException();
             }
@@ -282,11 +294,19 @@ public class MainWindow extends Application {
     }
 
 
+    public ServerManager getServerManager() {
+        return server_manager;
+    }
+
+
     /**
      * Append text to the console. This method is run in a thread to
      * avoid concurrency errors.
      *
      * @param text text to be appended.
+     * @implNote send to console's text parameter should be returned by
+     * LogHelper's log function.
+     * @see LogHelper for console logging.
      */
     public void sendToConsole(String text) {
         if (text != null) {
@@ -300,153 +320,80 @@ public class MainWindow extends Application {
     /**
      * Update the list of clients that connected to the server.
      * @param fsclients the list of clients to be displayed.
+     * @see ServerManager for the list of clients in the fsclients array list.
      */
     public void updateClientsList(ArrayList<ServerManager.FSClient> fsclients) {
         Platform.runLater(
                 () -> {
                     clients_list.clear();
-                    for (ServerManager.FSClient c : fsclients) {
-                        clients_list.add(c.getClientSocketAddress());
+                    for (ServerManager.FSClient client : fsclients) {
+                        clients_list.add(client.getClientName());
                     }
                 });
     }
 
 
+    public EnrollWindow getEnrollWindow() {
+        return new EnrollWindow(new Stage());
+    }
+
+
     /**
-     * The LoginWindow is a nested class that will appear during the initialization
-     * phase of the program. it will ask the user what host and port should the
-     * server be bound to.
+     * The ClientCell is a custom cell used by the clients_list_view object
+     * which adds two buttons. One for enrolling and disconnecting from a
+     * client.
      */
-    private class LoginWindow {
-        private int port;
-        private String host;
-        private final Stage login_stage;
+    private class ClientCell extends ListCell<String> {
+        private final Label item_name;
+        private final Button enroll_button;
+        private final Button disconnect_button;
+        private final GridPane grid;
+        private final Tooltip enroll_tooltip;
+        private final Tooltip disconnect_tooltip;
 
-        // components
-        Label host_label;
-        TextField host_textfield;
-        Label port_label;
-        TextField port_textfield;
+        public ClientCell() {
+            super();
 
-        /**
-         * Instantiate a LoginWindow object.
-         *
-         * @param stage the stage object. should be undecorated.
-         */
-        LoginWindow (Stage stage) {
-            login_stage = stage;
-            login_stage.setAlwaysOnTop(true);
-            login_stage.setResizable(false);
+            enroll_tooltip = new Tooltip("Enroll");
+            enroll_tooltip.setShowDelay(Duration.ZERO);
+            disconnect_tooltip = new Tooltip("Disconnect");
+            disconnect_tooltip.setShowDelay(Duration.ZERO);
+
+            enroll_button = new Button("E");
+            enroll_button.setOnAction(this::executeEnroll);
+            enroll_button.setTooltip(enroll_tooltip);
+            enroll_button.setMaxWidth(Double.MAX_VALUE);
+
+            disconnect_button = new Button("X");
+            disconnect_button.setTooltip(disconnect_tooltip);
+            disconnect_button.setMaxWidth(Double.MAX_VALUE);
+
+            item_name = new Label();
+            item_name.setMaxWidth(Double.MAX_VALUE);
+
+            GridPane.setHgrow(item_name, Priority.ALWAYS);
+            grid = new GridPane();
+            grid.add(item_name, 0, 0);
+            grid.add(enroll_button, 1, 0);
+            grid.add(disconnect_button, 2, 0);
         }
 
-
-        /**
-         * Initialize the UI of the window.
-         */
-        public void initUI() {
-            // ----- Row 1 ----- //
-            HBox row1 = new HBox();
-            row1.setAlignment(Pos.CENTER);
-
-            host_label = new Label("Bind to host:");
-            host_label.setPrefWidth(GuiConstants.LoginWindowSizes.LABEL_WIDTH.getValue());
-
-            host_textfield = new TextField("0.0.0.0");
-            host_textfield.setPrefWidth(GuiConstants.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
-            row1.getChildren().addAll(host_label, host_textfield);
-
-            // ----- Row 2 ----- //
-            HBox row2 = new HBox();
-            row2.setAlignment(Pos.CENTER);
-
-            port_label = new Label("Bind to port: ");
-            port_label.setPrefWidth(GuiConstants.LoginWindowSizes.LABEL_WIDTH.getValue());
-
-            port_textfield = new TextField("62609");
-            port_textfield.setPrefWidth(GuiConstants.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
-            row2.getChildren().addAll(port_label, port_textfield);
-
-            // ----- Row 3 ----- //
-            HBox row3 = new HBox();
-            row3.setAlignment(Pos.CENTER);
-
-            Button enter_button = new Button("Enter");
-            enter_button.setMaxWidth(Double.MAX_VALUE);
-            row3.getChildren().addAll(enter_button);
-            enter_button.setOnAction(e -> {
-                // Assign the text inputs from the text fields to the respective variables.
-                host = host_textfield.getText();
-                port = Integer.parseInt(port_textfield.getText());
-                closeWindow();
-            });
-
-            HBox.setHgrow(enter_button, Priority.ALWAYS);
-
-            // ----- Layout ----- //
-            BorderPane root = new BorderPane();
-            VBox semi_root = new VBox(10);
-            root.setCenter(semi_root);
-            semi_root.setAlignment(Pos.CENTER);
-            semi_root.getChildren().addAll(
-                    row1,
-                    row2,
-                    row3
-            );
-            BorderPane.setMargin(semi_root, new Insets(GuiConstants.WindowSizes.BORDERPANE_MARGIN.getValue()));
-
-            // ----- Scene ----- //
-            Scene scene = new Scene(root); // set the main layout of the scene.
-            login_stage.setWidth(GuiConstants.LoginWindowSizes.PRIMARY_WIDTH.getValue());
-            login_stage.setHeight(GuiConstants.LoginWindowSizes.PRIMARY_HEIGHT.getValue());
-            login_stage.setTitle(GuiConstants.StringValues.LOGIN_WINDOW_TITLE.getValue());
-            login_stage.setScene(scene); // set the main scene.
+        @Override
+        public void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(null);
+            setEditable(false);
+            setGraphic(null);
+            if (item != null) {
+                item_name.setText(item);
+                setGraphic(grid);
+            }
         }
 
-
-        /**
-         * Handle the LoginWindow close event.
-         */
-        public void handleClose() {
-            login_stage.setOnCloseRequest(event ->
-                Platform.exit()
-            );
-        }
-
-
-        /**
-         * Get the host input from the text field.
-         *
-         * @return the host to be bound to.
-         */
-        public String getHost() {
-            return host;
-        }
-
-
-        /**
-         * Get the port input from the text field.
-         *
-         * @return the port to be bound to
-         */
-        public int getPort() {
-            return port;
-        }
-
-
-        /**
-         * Shows the window and block the thread until window
-         * is closed.
-         */
-        public void showAndWait() {
-            login_stage.showAndWait();
-        }
-
-
-        /**
-         * Closes the window/stage.
-         */
-        public void closeWindow() {
-            login_stage.close();
+        private void executeEnroll(ActionEvent event) {
+            String command = "enroll " + item_name;
+            sendToConsole(LogHelper.log(command, LogTypes.CONSOLE));
+            CommandExecutor.execute(MainWindow.this, command);
         }
     }
 

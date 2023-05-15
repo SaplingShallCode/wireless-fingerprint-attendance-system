@@ -1,15 +1,19 @@
-package gui;
+package utility;
 
 /**
- * The GuiConstants class contains all the constant variables to be used
+ * The Const class contains all the constant variables to be used
  * by the classes contained in the current package
  */
-public class GuiConstants {
+public class Const {
 
     /**
      * Disable instantiation of this object.
      */
-    private GuiConstants() {}
+    private Const() {}
+
+
+    public static final String CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
 
     public enum WindowSizes {
         MIN_HEIGHT(600),
@@ -25,6 +29,7 @@ public class GuiConstants {
             return value;
         }
     }
+
 
     public enum StringValues {
         WINDOW_TITLE("Wireless Fingerprint-based Attendance Logger Server by NameGroup"),
@@ -42,6 +47,7 @@ public class GuiConstants {
         }
     }
 
+
     public enum LoginWindowSizes {
         PRIMARY_WIDTH(300),
         PRIMARY_HEIGHT(150),
@@ -58,6 +64,7 @@ public class GuiConstants {
         }
     }
 
+
     public enum Commands {
         START(
                 1,
@@ -73,7 +80,7 @@ public class GuiConstants {
         ),
         ENROLL(
                 3,
-                "Register a fingerprint on a selected fingerprint client.",
+                "Register a fingerprint on a selected fingerprint client. Id must be greater than 0.",
                 "enroll <client-name>",
                 "enroll"
         );
