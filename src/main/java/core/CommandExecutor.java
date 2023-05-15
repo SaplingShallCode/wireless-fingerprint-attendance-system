@@ -1,5 +1,6 @@
 package core;
 
+import gui.EnrollWindow;
 import javafx.event.ActionEvent;
 import utility.Const;
 import gui.MainWindow;
@@ -133,31 +134,22 @@ public class CommandExecutor {
             }
             case 3 -> {
                 LogHelper.debugLog("Case 3: enroll");
-                String client_to_find = new StringBuilder(input).substring(7, 15);
-                ServerManager.FSClient client;
-                int finger_id;
 
                 if (!checkValidServer(app, server_manager) || !checkValidSyntax(app, input, 7)) {
-                    break;
+                    break; // Server must be running and syntax should be valid to proceed.
                 }
+
+                EnrollWindow enroll_window = app.getEnrollWindow();
+                if (!enroll_window.getIsSubmitted()) {
+                    break; // Must click enroll window submit button to proceed.
+                }
+
+                String client_to_find = new StringBuilder(input).substring(7, 15);
+                ServerManager.FSClient client;
+                int finger_id = enroll_window.getFingerprintId();;
+
                 try {
                     client = findClient(app, server_manager, client_to_find);
-                    finger_id = Integer.parseInt(new StringBuilder(input).substring(16));
-                    if (finger_id < 1) {
-                        throw new NumberFormatException();
-                    }
-                }
-                catch (NumberFormatException nfe) {
-                    app.sendToConsole(LogHelper.log(
-                            "Invalid id input. Must be an integer NOT less than 1.", LogTypes.INVALID
-                    ));
-                    break;
-                }
-                catch (StringIndexOutOfBoundsException sioube) {
-                    app.sendToConsole(LogHelper.log(
-                            "Invalid id input. Please provide a valid integer.", LogTypes.INVALID
-                    ));
-                    break;
                 }
                 catch (NullPointerException npe) {
                     app.sendToConsole(LogHelper.log(
