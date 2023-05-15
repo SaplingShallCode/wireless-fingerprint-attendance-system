@@ -146,7 +146,15 @@ public class CommandExecutor {
 
                 String client_to_find = new StringBuilder(input).substring(7, 15);
                 ServerManager.FSClient client;
-                int finger_id = enroll_window.getFingerprintId();;
+                String first_name = enroll_window.getFirstName();
+                String middle_name = enroll_window.getMiddleName();
+                String last_name =  enroll_window.getLastName();
+                String age = enroll_window.getAge();
+                String gender = enroll_window.getGender();
+                String phone_number = enroll_window.getPhoneNumber();
+                String address = enroll_window.getAddress();
+                int finger_id = enroll_window.getFingerprintId();
+
 
                 try {
                     client = findClient(app, server_manager, client_to_find);
@@ -158,7 +166,15 @@ public class CommandExecutor {
                     break;
                 }
 
-                client.sendCommand("enroll\n" + finger_id);
+                client.sendCommand("enroll");
+                client.sendCommand(Integer.toString(finger_id));
+                client.sendCommand(first_name);
+                client.sendCommand(middle_name);
+                client.sendCommand(last_name);
+                client.sendCommand(age);
+                client.sendCommand(gender);
+                client.sendCommand(phone_number);
+                client.sendCommand(address);
             }
         }
     }
