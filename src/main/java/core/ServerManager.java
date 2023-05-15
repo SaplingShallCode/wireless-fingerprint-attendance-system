@@ -204,14 +204,55 @@ public class ServerManager implements Runnable {
                         message = input.readLine();
                         app.sendToConsole(LogHelper.log(message, LogTypes.CLIENT));
 
-                        // detect if a client disconnects.
-                        if (message.equals("disconnect")) {
-                            LogHelper.debugLog("Closing connection for " + client_socket_address);
-                            app.sendToConsole(LogHelper.log(
-                                    "Closing connection for " + client_socket_address,
-                                    LogTypes.SERVER
-                            ));
-                            disconnect();
+                        // Events
+                        switch (message) {
+                            case "disconnect" -> {
+                                LogHelper.debugLog("Closing connection for " + client_socket_address);
+                                app.sendToConsole(LogHelper.log(
+                                        "Closing connection for " + client_socket_address,
+                                        LogTypes.SERVER
+                                ));
+                                disconnect();
+                            }
+                            case "enrollFinger" -> {
+                                String first_name = input.readLine();
+                                String middle_name = input.readLine();
+                                String last_name =  input.readLine();
+                                String age = input.readLine();
+                                String gender = input.readLine();
+                                String phone_number = input.readLine();
+                                String address = input.readLine();
+                                String finger_id_unparsed = input.readLine();
+
+                                // TODO: Enroll to database here.
+
+                                app.sendToConsole(LogHelper.log(
+                                        "Successfully enrolled: " +
+                                                first_name + " " +
+                                                middle_name + " " +
+                                                last_name,
+                                        LogTypes.CLIENT
+                                ));
+                                app.sendToConsole(LogHelper.log(
+                                        "#######################     INFORMATION     ######################",
+                                        LogTypes.CLIENT
+                                ));
+                                app.sendToConsole(LogHelper.log("First Name : " + first_name, LogTypes.CLIENT));
+                                app.sendToConsole(LogHelper.log("Middle Name: " + middle_name, LogTypes.CLIENT));
+                                app.sendToConsole(LogHelper.log("Last Name  : " + last_name, LogTypes.CLIENT));
+                                app.sendToConsole(LogHelper.log("Age        : " + age, LogTypes.CLIENT));
+                                app.sendToConsole(LogHelper.log("Gender     : " + gender, LogTypes.CLIENT));
+                                app.sendToConsole(LogHelper.log("Phone No.  : " + phone_number, LogTypes.CLIENT));
+                                app.sendToConsole(LogHelper.log("Address    : " + address, LogTypes.CLIENT));
+                            }
+                            case "scanFinger" -> {
+                                String finger_id_unparsed = input.readLine();
+                                app.sendToConsole(LogHelper.log(
+                                        "Found match with finger ID: " + finger_id_unparsed,
+                                        LogTypes.CLIENT
+                                ));
+                                // TODO: Check if the ID is stored in the database.
+                            }
                         }
                     }
                 }
@@ -296,8 +337,6 @@ public class ServerManager implements Runnable {
                 random_character = Const.CHARSET.charAt(random_int);
                 generated_client_name.append(random_character);
             }
-
-            LogHelper.debugLog(generated_client_name.toString());
 
             return generated_client_name.toString();
         }
