@@ -385,7 +385,7 @@ public class MainWindow extends Application {
         }
 
         private void executeEnroll(ActionEvent event) {
-            String command = "enroll " + item_name;
+            String command = "enroll " + item_name.getText();
             sendToConsole(LogHelper.log(command, LogTypes.CONSOLE));
             CommandExecutor.execute(MainWindow.this, command);
         }
