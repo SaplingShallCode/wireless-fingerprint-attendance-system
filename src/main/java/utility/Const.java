@@ -81,7 +81,7 @@ public class Const {
         ENROLL(
                 3,
                 "Register a fingerprint on a selected fingerprint client. Id must be greater than 0.",
-                "enroll <client-name> <id>",
+                "enroll <client-name>",
                 "enroll"
         );
 
