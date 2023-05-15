@@ -327,6 +327,11 @@ public class MainWindow extends Application {
     }
 
 
+    public EnrollWindow getEnrollWindow() {
+        return new EnrollWindow(new Stage());
+    }
+
+
     /**
      * The ClientCell is a custom cell used by the clients_list_view object
      * which adds two buttons. One for enrolling and disconnecting from a
@@ -349,6 +354,7 @@ public class MainWindow extends Application {
             disconnect_tooltip.setShowDelay(Duration.ZERO);
 
             enroll_button = new Button("E");
+            enroll_button.setOnAction(this::executeEnroll);
             enroll_button.setTooltip(enroll_tooltip);
             enroll_button.setMaxWidth(Double.MAX_VALUE);
 
@@ -376,7 +382,12 @@ public class MainWindow extends Application {
                 item_name.setText(item);
                 setGraphic(grid);
             }
+        }
 
+        private void executeEnroll(ActionEvent event) {
+            String command = "enroll " + item_name;
+            sendToConsole(LogHelper.log(command, LogTypes.CONSOLE));
+            CommandExecutor.execute(MainWindow.this, command);
         }
     }
 
