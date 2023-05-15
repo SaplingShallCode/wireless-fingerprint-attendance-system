@@ -20,6 +20,9 @@ import core.ServerManager;
 import utility.Const;
 import utility.LogHelper;
 import utility.LogTypes;
+import javafx.scene.image.Image;
+
+import javax.swing.*;
 
 
 /**
@@ -232,6 +235,9 @@ public class MainWindow extends Application {
         primary_stage.setMinWidth(Const.WindowSizes.MIN_WIDTH.getValue());
         primary_stage.setTitle(Const.StringValues.WINDOW_TITLE.getValue());
         primary_stage.setScene(scene);
+        Image icon = new Image("C:\\Users\\Janel M. Antolin\\git\\wireless-fingerprint-attendance-system\\src\\main\\java\\gui\\icon.png");
+        primary_stage.getIcons().add(icon);
+
     }
 
 
@@ -392,12 +398,14 @@ public class MainWindow extends Application {
     }
 
 
+
     /**
      * Launch the application.
      *
      * @implNote Refer to the Launcher class when trying to run the program.
      * @param args terminal arguments.
      */
+
     public static void main(String[] args) {
         launch(args);
     }
