@@ -22,8 +22,6 @@ import utility.LogHelper;
 import utility.LogTypes;
 import javafx.scene.image.Image;
 
-import javax.swing.*;
-
 
 /**
  * The MainWindow class handles the user interface of the server.
@@ -235,7 +233,7 @@ public class MainWindow extends Application {
         primary_stage.setMinWidth(Const.WindowSizes.MIN_WIDTH.getValue());
         primary_stage.setTitle(Const.StringValues.WINDOW_TITLE.getValue());
         primary_stage.setScene(scene);
-        Image icon = new Image("C:\\Users\\Janel M. Antolin\\git\\wireless-fingerprint-attendance-system\\src\\main\\java\\gui\\icon.png");
+        Image icon = new Image(Const.ICON_PATH);
         primary_stage.getIcons().add(icon);
 
     }

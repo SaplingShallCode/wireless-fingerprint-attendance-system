@@ -13,6 +13,7 @@ public class Const {
 
 
     public static final String CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    public static final String ICON_PATH = "img/icon.png";
 
 
     public enum WindowSizes {
