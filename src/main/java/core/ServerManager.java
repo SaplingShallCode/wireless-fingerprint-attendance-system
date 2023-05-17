@@ -63,12 +63,7 @@ public class ServerManager implements Runnable {
                 app.sendToConsole(LogHelper.log("Closing all client sockets.", LogTypes.INFO));
                 for (FSClient client : fsclients) {
                     if (client != null) {
-                        app.sendToConsole(LogHelper.log(
-                                "Closing connection for " + client.getClientSocketAddress(),
-                                LogTypes.INFO
-                        ));
-                        client.disconnect();
-                        LogHelper.debugLog("client state: " + client.is_connected);
+                        client.interrupt();
                     }
                 }
 
@@ -255,10 +250,20 @@ public class ServerManager implements Runnable {
                             }
                         }
                     }
+                    if (this.isInterrupted()) {
+                        throw new InterruptedException();
+                    }
                 }
             }
             catch (IOException e) {
                 e.printStackTrace();
+            }
+            catch (InterruptedException ie) {
+                app.sendToConsole(LogHelper.log(
+                        "Forced to close connection with client " + client_name,
+                        LogTypes.WARNING
+                ));
+                disconnect();
             }
             finally {
                 closeAll();
