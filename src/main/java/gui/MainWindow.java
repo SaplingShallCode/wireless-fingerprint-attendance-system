@@ -20,7 +20,6 @@ import core.ServerManager;
 import utility.Const;
 import utility.LogHelper;
 import utility.LogTypes;
-import javafx.scene.image.Image;
 
 
 /**
@@ -232,10 +231,10 @@ public class MainWindow extends Application {
         primary_stage.setMinHeight(Const.WindowSizes.MIN_HEIGHT.getValue());
         primary_stage.setMinWidth(Const.WindowSizes.MIN_WIDTH.getValue());
         primary_stage.setTitle(Const.StringValues.WINDOW_TITLE.getValue());
+        for (Const.Icons i : Const.Icons.values()) {
+            primary_stage.getIcons().add(i.getIconImage());
+        }
         primary_stage.setScene(scene);
-        Image icon = new Image(Const.ICON_PATH);
-        primary_stage.getIcons().add(icon);
-
     }
 
 

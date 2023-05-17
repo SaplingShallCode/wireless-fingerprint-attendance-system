@@ -43,6 +43,9 @@ public class LoginWindow {
         login_stage = stage;
         login_stage.setAlwaysOnTop(true);
         login_stage.setResizable(false);
+        for (Const.Icons i : Const.Icons.values()) {
+            login_stage.getIcons().add(i.getIconImage());
+        }
     }
 
 

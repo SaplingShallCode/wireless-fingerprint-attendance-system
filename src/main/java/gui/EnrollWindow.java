@@ -12,6 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import utility.Const;
 
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
@@ -63,10 +64,14 @@ public class EnrollWindow {
         enroll_stage.setResizable(false);
         enroll_stage.setTitle("Fill out Form.");
         enroll_stage.setWidth(800);
+        for (Const.Icons i : Const.Icons.values()) {
+            enroll_stage.getIcons().add(i.getIconImage());
+        }
         initHeaderUI();
         initBodyUI();
         initFooterUI();
         initLayout();
+
         enroll_stage.showAndWait();
     }
 
