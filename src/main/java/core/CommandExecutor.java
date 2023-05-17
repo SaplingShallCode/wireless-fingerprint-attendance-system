@@ -135,17 +135,25 @@ public class CommandExecutor {
             case 3 -> {
                 LogHelper.debugLog("Case 3: enroll");
 
-                if (!checkValidServer(app, server_manager) || !checkValidSyntax(app, input, 7)) {
+                if (!checkValidServer(app, server_manager) || !checkValidSyntax(app, input, 7))
                     break; // Server must be running and syntax should be valid to proceed.
+
+                // Check the client name
+                String client_to_find = new StringBuilder(input).substring(7);
+                ServerManager.FSClient client;
+
+                try { client = findClient(app, server_manager, client_to_find); }
+                catch (NullPointerException npe) {
+                    app.sendToConsole(LogHelper.log(
+                            "Client does not exist.", LogTypes.INVALID
+                    ));
+                    break; // Client name should be valid before proceeding.
                 }
 
                 EnrollWindow enroll_window = app.getEnrollWindow();
-                if (!enroll_window.getIsSubmitted()) {
+                if (!enroll_window.getIsSubmitted())
                     break; // Must click enroll window submit button to proceed.
-                }
 
-                String client_to_find = new StringBuilder(input).substring(7, 15);
-                ServerManager.FSClient client;
                 String first_name = enroll_window.getFirstName();
                 String middle_name = enroll_window.getMiddleName();
                 String last_name =  enroll_window.getLastName();
@@ -154,17 +162,6 @@ public class CommandExecutor {
                 String phone_number = enroll_window.getPhoneNumber();
                 String address = enroll_window.getAddress();
                 int finger_id = enroll_window.getFingerprintId();
-
-
-                try {
-                    client = findClient(app, server_manager, client_to_find);
-                }
-                catch (NullPointerException npe) {
-                    app.sendToConsole(LogHelper.log(
-                            "Client does not exist.", LogTypes.INVALID
-                    ));
-                    break;
-                }
 
                 client.sendCommand("enroll");
                 client.sendCommand(Integer.toString(finger_id));
