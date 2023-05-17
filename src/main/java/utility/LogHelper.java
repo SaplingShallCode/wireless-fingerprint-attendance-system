@@ -23,8 +23,7 @@ public class LogHelper {
     }
 
     /**
-     * Check if the text is empty.
-     *
+     * Check if the text is empty. Check is needed to avoid spam entering.
      * @param text the text to be checked.
      * @return true if the string is empty.
      */
@@ -42,7 +41,7 @@ public class LogHelper {
         String log_text;
         if (!checkNullText(text)) {
             log_text = String.format(
-                    "[%s][%s]: %s",
+                    "[%s][%s]: %s", // ---> [datetime][logtype]: <text>
                     getDateTime(),
                     type.getType(),
                     text
