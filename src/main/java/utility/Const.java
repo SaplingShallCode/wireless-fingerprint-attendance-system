@@ -1,5 +1,6 @@
 package utility;
 
+import javafx.scene.image.Image;
 /**
  * The Const class contains all the constant variables to be used
  * by the classes contained in the current package
@@ -13,8 +14,10 @@ public class Const {
 
 
     public static final String CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    public static final String ICON_PATH = "img/icon.png";
-
+    public static final String ICON_PATH = "img/icondefault.png";
+    public static final String ICON64_PATH = "img/icon64x64.png";
+    public static final String ICON32_PATH = "img/icon32x32.png";
+    public static final String ICON16_PATH = "img/icon16x16.png";
 
     public enum WindowSizes {
         MIN_HEIGHT(600),
@@ -111,6 +114,24 @@ public class Const {
         }
         public String getReference() {
             return reference;
+        }
+    }
+
+
+    public enum Icons {
+        ICON_DEFAULT(new Image(ICON_PATH)),
+        ICON_64(new Image(ICON64_PATH)),
+        ICON_32(new Image(ICON32_PATH)),
+        ICON_16(new Image(ICON16_PATH));
+
+        private final Image img;
+        Icons (Image img) {
+            this.img = img;
+        }
+
+
+        public Image getIconImage() {
+            return img;
         }
     }
 
