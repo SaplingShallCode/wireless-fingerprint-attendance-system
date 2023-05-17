@@ -19,6 +19,9 @@ public class Const {
     public static final String ICON32_PATH = "img/icon32x32.png";
     public static final String ICON16_PATH = "img/icon16x16.png";
 
+    public static final Image ENROLL_ICON = new Image("img/enroll24x24.png");
+    public static final Image DISCONNECT_ICON = new Image("img/disconnect24x24.png");
+
     public enum WindowSizes {
         MIN_HEIGHT(600),
         MIN_WIDTH(1000),

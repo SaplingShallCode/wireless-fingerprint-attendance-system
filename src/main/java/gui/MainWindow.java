@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -347,21 +348,32 @@ public class MainWindow extends Application {
         private final GridPane grid;
         private final Tooltip enroll_tooltip;
         private final Tooltip disconnect_tooltip;
+        private final ImageView enroll_icon;
+        private final ImageView disconnect_icon;
 
         public ClientCell() {
             super();
+
+            enroll_icon = new ImageView(Const.ENROLL_ICON);
+            enroll_icon.setFitWidth(16);
+            enroll_icon.setFitHeight(16);
+            disconnect_icon = new ImageView(Const.DISCONNECT_ICON);
+            disconnect_icon.setFitWidth(16);
+            disconnect_icon.setFitHeight(16);
 
             enroll_tooltip = new Tooltip("Enroll");
             enroll_tooltip.setShowDelay(Duration.ZERO);
             disconnect_tooltip = new Tooltip("Disconnect");
             disconnect_tooltip.setShowDelay(Duration.ZERO);
 
-            enroll_button = new Button("E");
+            enroll_button = new Button();
+            enroll_button.setGraphic(enroll_icon);
             enroll_button.setOnAction(this::executeEnroll);
             enroll_button.setTooltip(enroll_tooltip);
             enroll_button.setMaxWidth(Double.MAX_VALUE);
 
-            disconnect_button = new Button("X");
+            disconnect_button = new Button();
+            disconnect_button.setGraphic(disconnect_icon);
             disconnect_button.setTooltip(disconnect_tooltip);
             disconnect_button.setMaxWidth(Double.MAX_VALUE);
 
