@@ -59,7 +59,6 @@ public class ServerManager implements Runnable {
                 new Thread(client).start();
             }
             catch (IOException e) {
-                LogHelper.debugLog("Closing all client sockets.");
                 app.sendToConsole(LogHelper.log("Closing all client sockets.", LogTypes.INFO));
                 for (FSClient client : fsclients) {
                     if (client != null) {
@@ -157,7 +156,6 @@ public class ServerManager implements Runnable {
 
         /**
          * Set the Input and Output streams of the client.
-         *
          * @throws IOException error when creating input and output streams.
          */
         private void setIO() throws IOException {
@@ -182,11 +180,9 @@ public class ServerManager implements Runnable {
         public void run() {
             is_connected = true;
             try {
-                LogHelper.debugLog("Just connected to client " + client_socket_address);
                 app.sendToConsole(LogHelper.log(
-                        "Just connected to client " + client_socket_address,
-                        LogTypes.SERVER
-                        ));
+                        "Just connected to client " + client_socket_address, LogTypes.SERVER
+                ));
                 // connect input and output streams for communication and send feedback to the client
                 setIO();
 
@@ -202,10 +198,8 @@ public class ServerManager implements Runnable {
                         // Events
                         switch (message) {
                             case "disconnect" -> {
-                                LogHelper.debugLog("Closing connection for " + client_socket_address);
                                 app.sendToConsole(LogHelper.log(
-                                        "Closing connection for " + client_socket_address,
-                                        LogTypes.SERVER
+                                        "Closing connection for " + client_name, LogTypes.SERVER
                                 ));
                                 disconnect();
                             }
@@ -294,21 +288,21 @@ public class ServerManager implements Runnable {
             try {
                 if (input != null) {
                     app.sendToConsole(LogHelper.log(
-                            "Closing input for " + client_socket_address,
+                            "Closing input for " + client_name,
                             LogTypes.SERVER
                     ));
                     input.close();
                 }
                 if (output != null) {
                     app.sendToConsole(LogHelper.log(
-                            "Closing output for " + client_socket_address,
+                            "Closing output for " + client_name,
                             LogTypes.SERVER
                     ));
                     output.close();
                 }
                 if (client_socket != null) {
                     app.sendToConsole(LogHelper.log(
-                            "Closing socket for" + client_socket_address,
+                            "Closing socket for" + client_name,
                             LogTypes.SERVER
                     ));
                     client_socket.close();
@@ -322,7 +316,7 @@ public class ServerManager implements Runnable {
                         ));
             }
             app.sendToConsole(LogHelper.log(
-                    "Successfully closed connection for " + client_socket_address,
+                    "Successfully closed connection for " + client_name,
                     LogTypes.SERVER));
         }
 
