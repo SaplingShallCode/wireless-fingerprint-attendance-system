@@ -74,12 +74,12 @@ public class ServerManager implements Runnable {
 
                 // wait for all clients to be removed before proceeding
                 while (fsclients.size() != 0);
-            }
-            finally {
-                sendClientListUpdate();
                 app.sendToConsole(LogHelper.log("All client sockets have been closed.", LogTypes.INFO));
                 app.sendToConsole(LogHelper.log("Server sucessfully closed.", LogTypes.INFO));
                 LogHelper.debugLog("Server stopped.");
+            }
+            finally {
+                sendClientListUpdate();
             }
         }
     }
