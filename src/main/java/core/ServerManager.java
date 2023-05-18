@@ -257,6 +257,7 @@ public class ServerManager implements Runnable {
                         "Forced to close connection with client " + client_name,
                         LogTypes.WARNING
                 ));
+                sendCommand("disconnect");
                 disconnect();
             }
             finally {

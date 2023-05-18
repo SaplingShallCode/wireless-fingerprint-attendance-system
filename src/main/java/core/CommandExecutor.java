@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@SuppressWarnings({"SameParameterValue","BooleanMethodIsAlwaysInverted"})
 public class CommandExecutor {
 
     private CommandExecutor() {}
@@ -172,6 +173,25 @@ public class CommandExecutor {
                 client.sendCommand(gender);
                 client.sendCommand(phone_number);
                 client.sendCommand(address);
+            }
+            case 4 -> {
+                LogHelper.debugLog("Case 4: disconnect");
+
+                if (!checkValidServer(app, server_manager) || !checkValidSyntax(app, input, 7))
+                    break; // Server must be running and syntax should be valid to proceed.
+
+                String client_to_find = new StringBuilder(input).substring(11);
+                ServerManager.FSClient client;
+
+                try { client = findClient(app, server_manager, client_to_find); }
+                catch (NullPointerException npe) {
+                    app.sendToConsole(LogHelper.log(
+                            "Client does not exist.", LogTypes.INVALID
+                    ));
+                    break; // Client name should be valid before proceeding.
+                }
+                client.sendCommand("disconnect");
+                client.disconnect();
             }
         }
     }

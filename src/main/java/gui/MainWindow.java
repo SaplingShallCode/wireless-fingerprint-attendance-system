@@ -380,6 +380,7 @@ public class MainWindow extends Application {
 
             disconnect_button = new Button();
             disconnect_button.setGraphic(disconnect_icon);
+            disconnect_button.setOnAction(this::executeDisconnect);
             disconnect_button.setTooltip(disconnect_tooltip);
             disconnect_button.setMaxWidth(Double.MAX_VALUE);
 
@@ -408,10 +409,21 @@ public class MainWindow extends Application {
 
         /**
          * Call the CommandExecutor to execute the enroll command.
-         * @param event the event fired by the enroll button
+         * @param event the event fired by the enroll button.
          */
         private void executeEnroll(ActionEvent event) {
             String command = "enroll " + item_name.getText(); // item name == client name
+            sendToConsole(LogHelper.log(command, LogTypes.CONSOLE));
+            CommandExecutor.execute(MainWindow.this, command);
+        }
+
+
+        /**
+         * Call the CommandExecutor to execute the enroll comand.
+         * @param event the event fired by the disconnect button.
+         */
+        private void executeDisconnect(ActionEvent event) {
+            String command = "disconnect " + item_name.getText(); // item name == client name
             sendToConsole(LogHelper.log(command, LogTypes.CONSOLE));
             CommandExecutor.execute(MainWindow.this, command);
         }

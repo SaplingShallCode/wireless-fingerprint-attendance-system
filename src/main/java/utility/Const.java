@@ -90,6 +90,12 @@ public class Const {
                 "Register a fingerprint on a selected fingerprint client. Id must be greater than 0.",
                 "enroll <client-name>",
                 "enroll"
+        ),
+        DISCONNECT(
+                4,
+                "Disconnect a client from the server.",
+                "disconnect <client-name>",
+                "disconnect"
         );
 
         private final int id;
