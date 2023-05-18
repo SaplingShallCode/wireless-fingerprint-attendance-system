@@ -54,7 +54,7 @@ public class MainWindow extends Application {
 
 
     /**
-     * Initialize all resources needed for the application.
+     * Initialize some resources needed for the application.
      * @see Const.Commands for the commands being added.
      */
     @Override
@@ -76,16 +76,15 @@ public class MainWindow extends Application {
     public void start(Stage stage) {
         login_window = new LoginWindow(new Stage());
         login_window.initUI();
-        login_window.handleClose(); // implement the close event of the login window
         login_window.showAndWait(); // blocking method
 
         primary_stage = stage;
         initUI();
         // handle the MainWindow close event
+        // if the server is not closed then remind user to close.
+        // NOTE: if server_manager is null then a NullPointerException is thrown.
         primary_stage.setOnCloseRequest(event -> {
             try {
-                // if the server is not closed then remind user to close.
-                // NOTE: if server_manager is null then a NullPointerException is thrown.
                 if (!server_manager.isClosed()) {
                     event.consume();
                     sendToConsole(LogHelper.log(
@@ -166,6 +165,7 @@ public class MainWindow extends Application {
                 server_group
         );
 
+        // fill the remaining spaces on the gui by stretching the components.
         HBox.setHgrow(start_server_button, Priority.ALWAYS);
         HBox.setHgrow(stop_server_button, Priority.ALWAYS);
 
@@ -184,7 +184,7 @@ public class MainWindow extends Application {
         command_field = new TextField();
         command_field.setMaxWidth(Double.MAX_VALUE);
         command_field.setOnKeyPressed( event -> {
-            // when user presses the Enter button on keyboard
+            // When user presses the Enter button on keyboard, send the input to the command executor.
             if (event.getCode() == KeyCode.ENTER) {
                 String input = command_field.getText();
                 sendToConsole(LogHelper.log(input, LogTypes.CONSOLE));
@@ -195,6 +195,7 @@ public class MainWindow extends Application {
 
         command_button = new Button("Enter");
         command_button.setOnAction( event -> {
+            // When user presses this Enter button, send the input to the command executor.
             String input = command_field.getText();
             sendToConsole(LogHelper.log(input, LogTypes.CONSOLE));
             CommandExecutor.execute(this, input);
@@ -211,6 +212,7 @@ public class MainWindow extends Application {
                 command_group
         );
 
+        // fill the remaining spaces on the gui by stretching the components.
         VBox.setVgrow(log_view, Priority.ALWAYS);
         HBox.setHgrow(command_field, Priority.ALWAYS);
 
@@ -300,7 +302,6 @@ public class MainWindow extends Application {
     /**
      * Append text to the console. This method is run in a thread to
      * avoid concurrency errors.
-     *
      * @param text text to be appended.
      * @implNote send to console's text parameter should be returned by
      * LogHelper's log function.
@@ -331,6 +332,11 @@ public class MainWindow extends Application {
     }
 
 
+    /**
+     * @implNote Used mainly by the CommandExecutor class
+     * @return a new EnrollWindow instance.
+     * @see CommandExecutor
+     */
     public EnrollWindow getEnrollWindow() {
         return new EnrollWindow(new Stage());
     }
@@ -377,7 +383,7 @@ public class MainWindow extends Application {
             disconnect_button.setTooltip(disconnect_tooltip);
             disconnect_button.setMaxWidth(Double.MAX_VALUE);
 
-            item_name = new Label();
+            item_name = new Label(); // the Client name
             item_name.setMaxWidth(Double.MAX_VALUE);
 
             GridPane.setHgrow(item_name, Priority.ALWAYS);
@@ -399,8 +405,13 @@ public class MainWindow extends Application {
             }
         }
 
+
+        /**
+         * Call the CommandExecutor to execute the enroll command.
+         * @param event the event fired by the enroll button
+         */
         private void executeEnroll(ActionEvent event) {
-            String command = "enroll " + item_name.getText();
+            String command = "enroll " + item_name.getText(); // item name == client name
             sendToConsole(LogHelper.log(command, LogTypes.CONSOLE));
             CommandExecutor.execute(MainWindow.this, command);
         }
@@ -410,7 +421,6 @@ public class MainWindow extends Application {
 
     /**
      * Launch the application.
-     *
      * @implNote Refer to the Launcher class when trying to run the program.
      * @param args terminal arguments.
      */

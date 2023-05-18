@@ -46,6 +46,13 @@ public class LoginWindow {
         for (Const.Icons i : Const.Icons.values()) {
             login_stage.getIcons().add(i.getIconImage());
         }
+        initUI();
+        // Handle the login window close event.
+        // When the user clicks on the close button instead of the enter button
+        // then the app will close instead of proceeding to main window ui.
+        login_stage.setOnCloseRequest(event ->
+                willExitApp = true
+        );
     }
 
 
@@ -64,6 +71,7 @@ public class LoginWindow {
         host_textfield.setPromptText("Default: 0.0.0.0"); // placeholder text
         host_textfield.setPrefWidth(Const.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
         host_textfield.textProperty().addListener((observable, old_value, new_value) -> {
+            // Check if the host entered is a valid ip address format.
             host_is_valid = host_textfield.getText().matches(
                     "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$"
             );
@@ -83,6 +91,7 @@ public class LoginWindow {
         port_textfield.setTooltip(new Tooltip("Valid port range is between 49152 to 65535."));
         port_textfield.setPrefWidth(Const.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
         port_textfield.textProperty().addListener((observable, old_value, new_value) -> {
+            // Check if the port entered is in the range of 49152 to 65535.
             port_is_valid = port_textfield.getText().matches(
                     "^(49[1-9][5-9][2-9]|"      +
                             "5[0-9][0-9][0-9][0-9]|"  +
@@ -142,16 +151,6 @@ public class LoginWindow {
         if (host_is_valid && port_is_valid) {
             enter_button.setDisable(false);
         }
-    }
-
-
-    /**
-     * Handle the LoginWindow close event.
-     */
-    public void handleClose() {
-        login_stage.setOnCloseRequest(event ->
-                willExitApp = true
-        );
     }
 
 
