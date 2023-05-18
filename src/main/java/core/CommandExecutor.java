@@ -115,6 +115,7 @@ public class CommandExecutor {
      * @see Const.Commands
      */
     public static void execute(MainWindow app, String input) {
+        if (LogHelper.checkNullText(input)) return; // Check if input is empty.
         int id = checkValidCommand(input);
         ServerManager server_manager = app.getServerManager();
 
