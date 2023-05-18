@@ -147,10 +147,12 @@ public class MainWindow extends Application {
         server_label = new Label("Server");
 
         start_server_button = new Button("Start");
+        start_server_button.getStyleClass().add("start-server-button");
         start_server_button.setMaxWidth(Double.MAX_VALUE);
         start_server_button.setOnAction(this::start_server);
 
         stop_server_button = new Button("Stop");
+        stop_server_button.getStyleClass().add("stop-server-button");
         stop_server_button.setMaxWidth(Double.MAX_VALUE);
         stop_server_button.setDisable(true);
         stop_server_button.setOnAction(this::stop_server);
@@ -177,16 +179,16 @@ public class MainWindow extends Application {
         VBox col2 = new VBox();
 
         ScrollPane console_container = new ScrollPane();
-        console_container.setStyle("-fx-background: black;");
+        console_container.getStyleClass().add("console-container");
         console_container.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         console_container.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
         console_container.setPannable(false);
 
         console_label = new Label("Console");
         console_output = new TextFlow();
+        console_output.getStyleClass().add("console-output");
         console_output.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         console_output.setFocusTraversable(false);
-        console_output.setStyle("-fx-background-color: black;");
         console_output.getChildren().addListener((ListChangeListener<Node>) observable -> {
             console_output.layout(); // update the layout of the text nodes.
             console_container.layout(); // update the layout of the console output node.
@@ -203,6 +205,7 @@ public class MainWindow extends Application {
 
         HBox command_group = new HBox();
         command_field = new TextField();
+        command_field.getStyleClass().add("command-field");
         command_field.setMaxWidth(Double.MAX_VALUE);
         command_field.setOnKeyPressed( event -> {
             // When user presses the Enter button on keyboard, send the input to the command executor.
@@ -215,6 +218,7 @@ public class MainWindow extends Application {
         });
 
         command_button = new Button("Enter");
+        command_button.getStyleClass().add("command-button");
         command_button.setOnAction( event -> {
             // When user presses this Enter button, send the input to the command executor.
             String input = command_field.getText();
