@@ -59,7 +59,7 @@ public class ServerManager implements Runnable {
                 new Thread(client).start();
             }
             catch (IOException e) {
-                app.sendToConsole(LogHelper.log("Closing all client sockets.", LogTypes.INFO));
+                app.sendToConsole(LogHelper.log("Disconnecting all clients from the server.", LogTypes.INFO));
                 for (FSClient client : fsclients) {
                     if (client != null) {
                         client.interrupt();
@@ -68,7 +68,7 @@ public class ServerManager implements Runnable {
 
                 // wait for all clients to be removed before proceeding
                 while (fsclients.size() != 0);
-                app.sendToConsole(LogHelper.log("All client sockets have been closed.", LogTypes.INFO));
+                app.sendToConsole(LogHelper.log("All clients have been disconnected.", LogTypes.INFO));
                 app.sendToConsole(LogHelper.log("Server sucessfully closed.", LogTypes.INFO));
                 LogHelper.debugLog("Server stopped.");
             }
@@ -199,7 +199,7 @@ public class ServerManager implements Runnable {
                         switch (message) {
                             case "disconnect" -> {
                                 app.sendToConsole(LogHelper.log(
-                                        "Closing connection for " + client_name, LogTypes.SERVER
+                                        "Closing connection for client " + client_name, LogTypes.SERVER
                                 ));
                                 disconnect();
                             }
@@ -289,21 +289,21 @@ public class ServerManager implements Runnable {
             try {
                 if (input != null) {
                     app.sendToConsole(LogHelper.log(
-                            "Closing input for " + client_name,
+                            "Closing input for client " + client_name,
                             LogTypes.SERVER
                     ));
                     input.close();
                 }
                 if (output != null) {
                     app.sendToConsole(LogHelper.log(
-                            "Closing output for " + client_name,
+                            "Closing output for client " + client_name,
                             LogTypes.SERVER
                     ));
                     output.close();
                 }
                 if (client_socket != null) {
                     app.sendToConsole(LogHelper.log(
-                            "Closing socket for" + client_name,
+                            "Closing socket for client " + client_name,
                             LogTypes.SERVER
                     ));
                     client_socket.close();
@@ -317,7 +317,7 @@ public class ServerManager implements Runnable {
                         ));
             }
             app.sendToConsole(LogHelper.log(
-                    "Successfully closed connection for " + client_name,
+                    "Successfully closed connection for client " + client_name,
                     LogTypes.SERVER));
         }
 
