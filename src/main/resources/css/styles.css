@@ -1,0 +1,20 @@
+.console-container {
+    -fx-background: black;
+}
+
+
+.console-output {
+    -fx-background-color: black;
+}
+
+
+.start-server-button {}
+
+
+.stop-server-button {}
+
+
+.command-field {}
+
+
+.command-button {}
