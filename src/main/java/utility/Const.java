@@ -1,6 +1,8 @@
 package utility;
 
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
+
 /**
  * The Const class contains all the constant variables to be used
  * by the classes contained in the current package
@@ -21,6 +23,8 @@ public class Const {
 
     public static final Image ENROLL_ICON = new Image("img/enroll24x24.png");
     public static final Image DISCONNECT_ICON = new Image("img/disconnect24x24.png");
+
+    public static final Font CONSOLAS = new Font("Consolas", 13);
 
     public enum WindowSizes {
         MIN_HEIGHT(600),
