@@ -28,6 +28,9 @@ public class EnrollWindow {
     private String phone_number;
     private String address;
     private int fingerprint_id;
+
+    private boolean valid_age;
+    private boolean valid_phone_number;
     private boolean valid_fingerprint_id;
     private boolean isSubmitted;
 
@@ -94,6 +97,12 @@ public class EnrollWindow {
         middle_name_field = new TextField();
         last_name_field = new TextField();
         age_field = new TextField();
+        age_field.textProperty().addListener((observable, oldValue, newValue) -> {
+            // Check if input is a number and a valid age (from 1 to 99).
+            valid_age = age_field.getText().matches(
+                    "^(1-9|[1-9][0-9])$"
+            );
+        });
         gender_field = new ChoiceBox<>();
         gender_field.setValue("Select an option...");
         gender_field.getItems().addAll(
@@ -102,6 +111,12 @@ public class EnrollWindow {
                 "Other"
         );
         phone_number_field = new TextField();
+        phone_number_field.textProperty().addListener((observable, oldValue, newValue) -> {
+            // Check if valid PH phone number.
+            valid_phone_number = phone_number_field.getText().matches(
+                    "^(09|\\+639)\\d{9}$"
+            );
+        });
         address_field = new TextField();
     }
 
@@ -246,6 +261,7 @@ public class EnrollWindow {
     public int getFingerprintId() {
         return fingerprint_id;
     }
+
 
     public boolean getIsSubmitted() { return isSubmitted; }
 }
