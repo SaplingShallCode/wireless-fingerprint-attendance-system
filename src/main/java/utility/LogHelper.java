@@ -1,5 +1,7 @@
 package utility;
 
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -10,6 +12,7 @@ import java.time.format.FormatStyle;
  * It includes the specific date and time the text was logged into an output
  * and also what type of text it is supposed to represent.
  */
+@SuppressWarnings("ConstantConditions")
 public class LogHelper {
 
     /**
@@ -27,8 +30,8 @@ public class LogHelper {
      * @param text the text to be checked.
      * @return true if the string is empty.
      */
-    private static boolean checkNullText(String text) {
-        return text.equals("");
+    public static boolean checkNullText(String text) {
+        return text.matches("^\\s*$");
     }
 
     /**
@@ -37,16 +40,26 @@ public class LogHelper {
      * @param type the classification of the text.
      * @return a formatted text to be used for logging.
      */
-    public static String log(String text, LogTypes type) {
+    public static Text log(String text, LogTypes type) {
         String log_text;
+        Text rich_text;
         if (!checkNullText(text)) {
             log_text = String.format(
-                    "[%s][%s]: %s", // ---> [datetime][logtype]: <text>
+                    "[%s][%s]: %s\n", // ---> [datetime][logtype]: <text>
                     getDateTime(),
                     type.getType(),
                     text
             );
-            return log_text;
+            rich_text = new Text(log_text);
+            rich_text.setFont(Const.CONSOLAS);
+
+            switch (type) {
+                case ERROR -> rich_text.setFill(Color.RED);
+                case INFO -> rich_text.setFill(Color.DODGERBLUE);
+                case WARNING, INVALID -> rich_text.setFill(Color.ORANGE);
+                default -> rich_text.setFill(Color.WHITE);
+            }
+            return rich_text;
         }
         return null;
     }
@@ -54,10 +67,10 @@ public class LogHelper {
     /**
      * Log the text and display it into the Standard Output (System.out).
      * This method is intended to be used for debugging.
-     *
      * @param text the text to be logged.
      */
     public static void debugLog(String text) {
-        System.out.println(log(text, LogTypes.DEBUG));
+        String debug_str = log(text, LogTypes.DEBUG).getText();
+        if (debug_str != null) System.out.print(debug_str);
     }
 }

@@ -3,16 +3,20 @@ package gui;
 import javafx.application.Platform;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
 import javafx.util.Duration;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,8 +51,8 @@ public class MainWindow extends Application {
     private Label server_label;
     private Button start_server_button;
     private Button stop_server_button;
-    private Label log_label;
-    private TextArea log_view;
+    private Label console_label;
+    private TextFlow console_output;
     private TextField command_field;
     private Button command_button;
 
@@ -172,13 +176,30 @@ public class MainWindow extends Application {
         // ----- Column 2 ----- //
         VBox col2 = new VBox();
 
-        log_label = new Label("Console");
-        log_view = new TextArea();
-        log_view.setMaxHeight(Double.MAX_VALUE);
-        log_view.setFont(Font.font("Consolas"));
-        log_view.setFocusTraversable(false);
-        log_view.setEditable(false);
-        log_view.appendText("Wireless-Fingerprint-Based-Attendance-Logger-Server by NameGroup.\n\n");
+        ScrollPane console_container = new ScrollPane();
+        console_container.setStyle("-fx-background: black;");
+        console_container.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        console_container.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        console_container.setPannable(false);
+
+        console_label = new Label("Console");
+        console_output = new TextFlow();
+        console_output.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        console_output.setFocusTraversable(false);
+        console_output.setStyle("-fx-background-color: black;");
+        console_output.getChildren().addListener((ListChangeListener<Node>) observable -> {
+            console_output.layout(); // update the layout of the text nodes.
+            console_container.layout(); // update the layout of the console output node.
+            console_container.setVvalue(1); // Auto scroll to bottom of the console.
+        });
+        console_container.setContent(console_output);
+
+        // initialize console text
+        Text namegroup_Text = new Text("Wireless-Fingerprint-Based-Attendance-Logger-Server by NameGroup.\n\n");
+        namegroup_Text.setFont(Const.CONSOLAS);
+        namegroup_Text.setFill(Color.WHITE);
+        console_output.getChildren().add(namegroup_Text);
+        //console_output.appendText("Wireless-Fingerprint-Based-Attendance-Logger-Server by NameGroup.\n\n");
 
         HBox command_group = new HBox();
         command_field = new TextField();
@@ -207,13 +228,13 @@ public class MainWindow extends Application {
                 command_button
         );
         col2.getChildren().addAll(
-                log_label,
-                log_view,
+                console_label,
+                console_container,
                 command_group
         );
 
         // fill the remaining spaces on the gui by stretching the components.
-        VBox.setVgrow(log_view, Priority.ALWAYS);
+        VBox.setVgrow(console_container, Priority.ALWAYS);
         HBox.setHgrow(command_field, Priority.ALWAYS);
 
         // ----- Layout ----- //
@@ -302,16 +323,14 @@ public class MainWindow extends Application {
     /**
      * Append text to the console. This method is run in a thread to
      * avoid concurrency errors.
-     * @param text text to be appended.
+     * @param rich_text formatted text to be appended.
      * @implNote send to console's text parameter should be returned by
      * LogHelper's log function.
      * @see LogHelper for console logging.
      */
-    public void sendToConsole(String text) {
-        if (text != null) {
-            Platform.runLater(
-                    () -> log_view.appendText(text + "\n")
-            );
+    public void sendToConsole(Text rich_text) {
+        if (rich_text != null) {
+            Platform.runLater(() -> console_output.getChildren().add(rich_text));
         }
     }
 
