@@ -30,9 +30,16 @@
 
 .console-container,
 .console-output {
+    -fx-background-color: #232832;
     -fx-background: #232832;
     -fx-border-color: #232832;
     -fx-faint-focus-color: transparent;
+}
+
+.console-container:focused,
+.console-output:focused {
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 5, 4, 3;
 }
 
 .scroll-bar {                       /* The scrollbar */
@@ -58,4 +65,11 @@
 .decrement-button {                 /* The corners of the scrollbar */
     -fx-background-color: transparent;
     -fx-border-color: transparent;
+}
+
+.command-field {
+    -fx-background-color: #232832;
+    -fx-border-color: #232832;
+    -fx-faint-focus-color: transparent;
+    -fx-text-fill: #fff;
 }
