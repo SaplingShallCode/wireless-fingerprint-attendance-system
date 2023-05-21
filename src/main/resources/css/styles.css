@@ -1,20 +1,61 @@
-.console-container {
-    -fx-background: black;
+.root {
+    -fx-focus-color: transparent;
+    -fx-background-color: #323741;
 }
 
+.button {                           /* All buttons */
+    -fx-background-color: #C147E9;
+    -fx-text-fill: #fff;
+    -fx-font-family: "Consolas";
+}
 
+.label {                            /* All labels */
+    -fx-background-color: #323741;
+    -fx-text-fill: #fff;
+    -fx-font-family: "Consolas";
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+    -fx-padding: 12px 0 12px 0;
+}
+
+.commands-list,
+.clients-list,
+.commands-list .list-cell,
+.clients-list .list-cell
+{
+    -fx-background-color: #232832;
+    -fx-border-color: #232832;
+    -fx-text-fill: #fff;
+}
+
+.console-container,
 .console-output {
-    -fx-background-color: black;
+    -fx-background: #232832;
+    -fx-border-color: #232832;
+    -fx-faint-focus-color: transparent;
 }
 
+.scroll-bar {                       /* The scrollbar */
+    -fx-background-color: #232832;
+}
 
-.start-server-button {}
+.scroll-bar:vertical .thumb,
+.scroll-bar:horizontal .thumb {     /* The literal interactive scrollbar */
+    -fx-background-color: #C147E9;
+    -fx-border-radius: 10px;
+}
 
+.scroll-bar:vertical .track,
+.scroll-bar:horizontal .track {     /* The parent of the interactive scrollbar */
+    -fx-background-color: transparent;
+}
 
-.stop-server-button {}
+.console-container > .corner {      /* The corners of the scrollbar */
+    -fx-background-color: #232832;
+}
 
-
-.command-field {}
-
-
-.command-button {}
+.increment-button,
+.decrement-button {                 /* The corners of the scrollbar */
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}

@@ -135,11 +135,15 @@ public class MainWindow extends Application {
         VBox col1 = new VBox();
 
         commands_listlabel = new Label("List of available commands:");
+        commands_listlabel.getStyleClass().add("commands-list-label");
         commands_listview = new ListView<>(commands_list);
+        commands_listview.getStyleClass().add("commands-list");
         commands_listview.setFocusTraversable(false);
 
         clients_listlabel = new Label("Connected clients:");
+        clients_listlabel.getStyleClass().add("clients-list-label");
         clients_listview = new ListView<>(clients_list);
+        clients_listview.getStyleClass().add("clients-list");
         clients_listview.setCellFactory(param -> new ClientCell()); // See nested ClientCell class below.
         clients_listview.setFocusTraversable(false);
 
