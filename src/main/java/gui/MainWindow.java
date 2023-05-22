@@ -148,6 +148,7 @@ public class MainWindow extends Application {
         clients_listview.setFocusTraversable(false);
 
         HBox server_group = new HBox();
+        server_group.setSpacing(10);
         server_label = new Label("Server");
 
         start_server_button = new Button("Start");

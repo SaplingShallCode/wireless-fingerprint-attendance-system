@@ -9,6 +9,14 @@
     -fx-font-family: "Consolas";
 }
 
+.button:hover {
+    -fx-background-color: #cd6ced;
+}
+
+.button:pressed {
+    -fx-background-color: #9a39ba;
+}
+
 .label {                            /* All labels */
     -fx-background-color: #323741;
     -fx-text-fill: #fff;
@@ -17,6 +25,13 @@
     -fx-font-weight: 800;
     -fx-padding: 12px 0 12px 0;
 }
+
+
+/* ================================================================================ */
+/* =                                                                              = */
+/* =                               ENROLL  WINDOW                                 = */
+/* =                                                                              = */
+/* ================================================================================ */
 
 .commands-list,
 .clients-list,
@@ -52,6 +67,16 @@
     -fx-border-radius: 10px;
 }
 
+.scroll-bar:vertical .thumb:hover,
+.scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #cd6ced;
+}
+
+.scroll-bar:vertical .thumb:pressed,
+.scroll-bar:horizontal .thumb:pressed {
+    -fx-background-color: #9a39ba;
+}
+
 .scroll-bar:vertical .track,
 .scroll-bar:horizontal .track {     /* The parent of the interactive scrollbar */
     -fx-background-color: transparent;
@@ -68,6 +93,30 @@
 }
 
 .command-field {
+    -fx-background-color: #232832;
+    -fx-border-color: #232832;
+    -fx-faint-focus-color: transparent;
+    -fx-text-fill: #fff;
+    -fx-font-family: "Consolas";
+}
+
+
+/* ============================================================================== */
+/* =                                                                            = */
+/* =                               LOGIN WINDOW                                 = */
+/* =                                                                            = */
+/* ============================================================================== */
+
+.login-host-label,
+.login-port-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+    -fx-width: 100%;
+    -fx-padding: 0;
+}
+
+.login-host-field,
+.login-port-field {
     -fx-background-color: #232832;
     -fx-border-color: #232832;
     -fx-faint-focus-color: transparent;
