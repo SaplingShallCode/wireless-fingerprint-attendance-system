@@ -184,7 +184,7 @@ public class MainWindow extends Application {
 
         ScrollPane console_container = new ScrollPane();
         console_container.getStyleClass().add("console-container");
-        console_container.setFitToWidth(true);
+        console_container.setFitToWidth(false);
         console_container.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);  // show console scrollbar when needed
         console_container.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);     // Always show console scrollbar
         console_container.setPannable(false);
