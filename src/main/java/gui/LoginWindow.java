@@ -43,9 +43,11 @@ public class LoginWindow {
         login_stage = stage;
         login_stage.setAlwaysOnTop(true);
         login_stage.setResizable(false);
+
         for (Const.Icons i : Const.Icons.values()) {
             login_stage.getIcons().add(i.getIconImage());
         }
+
         initUI();
         // Handle the login window close event.
         // When the user clicks on the close button instead of the enter button
@@ -64,10 +66,12 @@ public class LoginWindow {
         HBox row1 = new HBox();
         row1.setAlignment(Pos.CENTER);
 
-        host_label = new Label("Bind to host:");
+        host_label = new Label("HOST:");
+        host_label.getStyleClass().add("login-host-label");
         host_label.setPrefWidth(Const.LoginWindowSizes.LABEL_WIDTH.getValue());
 
         host_textfield = new TextField("0.0.0.0");
+        host_textfield.getStyleClass().add("login-host-field");
         host_textfield.setPromptText("Default: 0.0.0.0"); // placeholder text
         host_textfield.setPrefWidth(Const.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
         host_textfield.textProperty().addListener((observable, old_value, new_value) -> {
@@ -83,10 +87,12 @@ public class LoginWindow {
         HBox row2 = new HBox();
         row2.setAlignment(Pos.CENTER);
 
-        port_label = new Label("Bind to port: ");
+        port_label = new Label("PORT: ");
+        port_label.getStyleClass().add("login-port-label");
         port_label.setPrefWidth(Const.LoginWindowSizes.LABEL_WIDTH.getValue());
 
         port_textfield = new TextField("62609");
+        port_textfield.getStyleClass().add("login-port-field");
         port_textfield.setPromptText("Default: 62609"); // placeholder text
         port_textfield.setTooltip(new Tooltip("Valid port range is between 49152 to 65535."));
         port_textfield.setPrefWidth(Const.LoginWindowSizes.TEXTFIELD_WIDTH.getValue());
@@ -109,8 +115,8 @@ public class LoginWindow {
         row3.setAlignment(Pos.CENTER);
 
         enter_button = new Button("Enter");
+        enter_button.getStyleClass().add("login-enter-button");
         enter_button.setMaxWidth(Double.MAX_VALUE);
-        row3.getChildren().addAll(enter_button);
         enter_button.setOnAction(e -> {
             // Assign the text inputs from the text fields to the respective variables.
             host = host_textfield.getText();
@@ -119,6 +125,7 @@ public class LoginWindow {
             closeWindow();
         });
 
+        row3.getChildren().addAll(enter_button);
         HBox.setHgrow(enter_button, Priority.ALWAYS);
 
         // ----- Layout ----- //
@@ -135,6 +142,7 @@ public class LoginWindow {
 
         // ----- Scene ----- //
         Scene scene = new Scene(root); // set the main layout of the scene.
+        scene.getStylesheets().add(Const.StringValues.STYLESHEET_PATH.getValue());
         login_stage.setWidth(Const.LoginWindowSizes.PRIMARY_WIDTH.getValue());
         login_stage.setHeight(Const.LoginWindowSizes.PRIMARY_HEIGHT.getValue());
         login_stage.setTitle(Const.StringValues.LOGIN_WINDOW_TITLE.getValue());

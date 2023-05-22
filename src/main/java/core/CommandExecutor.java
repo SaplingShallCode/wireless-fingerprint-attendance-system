@@ -178,7 +178,7 @@ public class CommandExecutor {
             case 4 -> {
                 LogHelper.debugLog("Case 4: disconnect");
 
-                if (!checkValidServer(app, server_manager) || !checkValidSyntax(app, input, 7))
+                if (!checkValidServer(app, server_manager) || !checkValidSyntax(app, input, 11))
                     break; // Server must be running and syntax should be valid to proceed.
 
                 String client_to_find = new StringBuilder(input).substring(11);
@@ -193,6 +193,26 @@ public class CommandExecutor {
                 }
                 client.sendCommand("disconnect");
                 client.disconnect();
+            }
+
+            case 5 -> {
+                LogHelper.debugLog("Case 4: show all clients info");
+                ArrayList<ServerManager.FSClient> clients = server_manager.getClients();
+
+                if (!checkValidServer(app, server_manager)) break; // server must be running to proceed.
+                if (clients.size() == 0) {
+                    app.sendToConsole(LogHelper.log(
+                            "No clients found.", LogTypes.ERROR));
+                    break; // terminate execution of command if there are no clients connected.
+                }
+
+                for (ServerManager.FSClient client : clients) {
+                    String client_name = client.getClientName();
+                    String client_address = client.getClientSocketAddress();
+                    app.sendToConsole(LogHelper.log(
+                            "|#| " + client_name + " | " + client_address + "|#|", LogTypes.INFO));
+                }
+
             }
         }
     }

@@ -148,6 +148,7 @@ public class MainWindow extends Application {
         clients_listview.setFocusTraversable(false);
 
         HBox server_group = new HBox();
+        server_group.setSpacing(10);
         server_label = new Label("Server");
 
         start_server_button = new Button("Start");
@@ -184,8 +185,9 @@ public class MainWindow extends Application {
 
         ScrollPane console_container = new ScrollPane();
         console_container.getStyleClass().add("console-container");
-        console_container.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        console_container.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        console_container.setFitToWidth(false);
+        console_container.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);  // show console scrollbar when needed
+        console_container.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);     // Always show console scrollbar
         console_container.setPannable(false);
 
         console_label = new Label("Console");
@@ -194,8 +196,8 @@ public class MainWindow extends Application {
         console_output.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         console_output.setFocusTraversable(false);
         console_output.getChildren().addListener((ListChangeListener<Node>) observable -> {
-            console_output.layout(); // update the layout of the text nodes.
-            console_container.layout(); // update the layout of the console output node.
+            console_output.layout();        // update the layout of the text nodes.
+            console_container.layout();     // update the layout of the console output node.
             console_container.setVvalue(1); // Auto scroll to bottom of the console.
         });
         console_container.setContent(console_output);
@@ -205,9 +207,7 @@ public class MainWindow extends Application {
         namegroup_Text.setFont(Const.CONSOLAS);
         namegroup_Text.setFill(Color.WHITE);
         console_output.getChildren().add(namegroup_Text);
-        //console_output.appendText("Wireless-Fingerprint-Based-Attendance-Logger-Server by NameGroup.\n\n");
 
-        HBox command_group = new HBox();
         command_field = new TextField();
         command_field.getStyleClass().add("command-field");
         command_field.setMaxWidth(Double.MAX_VALUE);
@@ -221,24 +221,10 @@ public class MainWindow extends Application {
             }
         });
 
-        command_button = new Button("Enter");
-        command_button.getStyleClass().add("command-button");
-        command_button.setOnAction( event -> {
-            // When user presses this Enter button, send the input to the command executor.
-            String input = command_field.getText();
-            sendToConsole(LogHelper.log(input, LogTypes.CONSOLE));
-            CommandExecutor.execute(this, input);
-            command_field.clear();
-        });
-
-        command_group.getChildren().addAll(
-                command_field,
-                command_button
-        );
         col2.getChildren().addAll(
                 console_label,
                 console_container,
-                command_group
+                command_field
         );
 
         // fill the remaining spaces on the gui by stretching the components.

@@ -62,7 +62,7 @@ public class ServerManager implements Runnable {
                 new Thread(client).start();
             }
             catch (IOException e) {
-                app.sendToConsole(LogHelper.log("Disconnecting all clients from the server.", LogTypes.INFO));
+                app.sendToConsole(LogHelper.log("Disconnecting all clients from the server...", LogTypes.WARNING));
                 for (FSClient client : fsclients) {
                     if (client != null) {
                         client.interrupt();
@@ -92,7 +92,7 @@ public class ServerManager implements Runnable {
             throw new IOException();
         }
         is_running = false;
-        app.sendToConsole(LogHelper.log("Closing server.", LogTypes.INFO));
+        app.sendToConsole(LogHelper.log("Closing server...", LogTypes.WARNING));
         if (server_socket != null) {
             server_socket.close();
         }
@@ -249,7 +249,7 @@ public class ServerManager implements Runnable {
                                         LogTypes.CLIENT
                                 ));
                                 app.sendToConsole(LogHelper.log(
-                                        "#######################     INFORMATION     ######################",
+                                        "=======================     INFORMATION     =======================",
                                         LogTypes.CLIENT
                                 ));
                                 app.sendToConsole(LogHelper.log("First Name : " + first_name, LogTypes.CLIENT));
