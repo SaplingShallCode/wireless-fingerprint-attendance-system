@@ -2,6 +2,9 @@ package core;
 
 import java.io.*;
 import java.net.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -213,6 +216,29 @@ public class ServerManager implements Runnable {
                                 String address = input.readLine();
                                 String finger_id_unparsed = input.readLine();
 
+                                DatabaseManager databaseManager = new DatabaseManager();
+
+                                try {
+                                    Connection connection = databaseManager.openConnection();
+                                    Statement statement = connection.createStatement();
+                                    String enroll = "INSERT INTO attendees (user_id, age, gender, phone_number, address, " +
+                                            "last_name, first_name, middle_name) VALUES (";
+                                    String insert = enroll + finger_id_unparsed + ", "
+                                            + age + ", "
+                                            + gender + ", "
+                                            + phone_number + ", "
+                                            + address + ", "
+                                            + last_name + ", "
+                                            + first_name + ", "
+                                            + middle_name + ")";
+                                    statement.executeUpdate(insert);
+
+                                    statement.close();
+                                    connection.close();
+
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
                                 // TODO: Enroll to database here.
 
                                 app.sendToConsole(LogHelper.log(

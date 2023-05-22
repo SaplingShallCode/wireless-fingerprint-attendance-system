@@ -29,7 +29,7 @@ public class DatabaseManager {
      * @return a connection object
      * @throws SQLException if a database access error or the url is null.
      */
-    private Connection openConnection() throws SQLException {
+    public Connection openConnection() throws SQLException {
         Connection connection = null;
         try {
             Class.forName("org.postgresql.Driver");
