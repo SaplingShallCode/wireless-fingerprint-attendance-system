@@ -100,6 +100,12 @@ public class Const {
                 "Disconnect a client from the server.",
                 "disconnect <client-name>",
                 "disconnect"
+        ),
+        CLIENTS_INFO(
+                5,
+                "Display the remote address and port of all the clients.",
+                "clients info",
+                "clients info"
         );
 
         private final int id;
