@@ -122,3 +122,19 @@
     -fx-text-fill: #fff;
     -fx-font-family: "Consolas";
 }
+
+
+/* ================================================================================ */
+/* =                                                                              = */
+/* =                                ALERT  DIALOG                                 = */
+/* =                                                                              = */
+/* ================================================================================ */
+
+
+.alert-window:header .header-panel {
+    -fx-background-color: #323741;
+}
+
+.alert-window .content {
+    -fx-padding: 0 10px 0 10px;
+}
