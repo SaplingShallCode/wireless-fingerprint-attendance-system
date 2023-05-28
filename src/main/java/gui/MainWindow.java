@@ -99,6 +99,15 @@ public class MainWindow extends Application {
                     alert_window.setTitle("Warning");
                     alert_window.setHeaderText("Server is still open...");
                     alert_window.setContentText("Please close the server before exiting the app.");
+                    // Adding icon to the alert window
+                    Stage alert_window_stage = (Stage) alert_window.getDialogPane().getScene().getWindow();
+                    for (Const.Icons i : Const.Icons.values()) {
+                        alert_window_stage.getIcons().add(i.getIconImage());
+                    }
+                    // Adding a stylesheet to the alert window
+                    DialogPane alert_window_dialog_pane = alert_window.getDialogPane();
+                    alert_window_dialog_pane.getStyleClass().add("alert-window");
+                    alert_window_dialog_pane.getStylesheets().add(Const.StringValues.STYLESHEET_PATH.getValue());
                     alert_window.showAndWait();
                 }
                 else {
