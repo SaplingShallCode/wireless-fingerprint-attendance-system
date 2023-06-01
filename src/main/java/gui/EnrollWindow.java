@@ -100,8 +100,9 @@ public class EnrollWindow {
         age_field.textProperty().addListener((observable, oldValue, newValue) -> {
             // Check if input is a number and a valid age (from 1 to 99).
             valid_age = age_field.getText().matches(
-                    "^(1-9|[1-9][0-9])$"
+                    "^([1-9]|[1-9][0-9])$"
             );
+            updateButtonState();
         });
         gender_field = new ChoiceBox<>();
         gender_field.setValue("Select an option...");
@@ -116,6 +117,7 @@ public class EnrollWindow {
             valid_phone_number = phone_number_field.getText().matches(
                     "^(09|\\+639)\\d{9}$"
             );
+            updateButtonState();
         });
         address_field = new TextField();
     }
@@ -126,6 +128,7 @@ public class EnrollWindow {
         fingerprint_id_field = new TextField();
         fingerprint_id_field.textProperty().addListener((observable, old_value, new_value) -> {
             valid_fingerprint_id = fingerprint_id_field.getText().matches(
+                    // 0-255
                     "^(2[0-5][0-5]|" +
                             "1[0-9][0-9]|" +
                             "[1-9][0-9]|" +
@@ -217,7 +220,7 @@ public class EnrollWindow {
 
     private void updateButtonState() {
         submit_button.setDisable(true);
-        if (valid_fingerprint_id) {
+        if (valid_fingerprint_id && valid_age && valid_phone_number) {
             submit_button.setDisable(false);
         }
     }
