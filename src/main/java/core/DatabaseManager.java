@@ -61,7 +61,7 @@ public class DatabaseManager {
                     ")";
 
             String create_user_info_t = "CREATE TABLE IF NOT EXISTS user_info (" +
-                    "user_id integer REFERENCES users (user_id), " +
+                    "user_id integer REFERENCES users (user_id) ON DELETE CASCADE, " +
                     "first_name text, " +
                     "middle_name text, " +
                     "last_name text, " +
@@ -73,7 +73,7 @@ public class DatabaseManager {
 
             String create_attendance_t = "CREATE TABLE IF NOT EXISTS attendance (" +
                     "attendance_id serial PRIMARY KEY, " +
-                    "user_id integer REFERENCES users (user_id), " +
+                    "user_id integer REFERENCES users (user_id) ON DELETE CASCADE, " +
                     "date_attended date NOT NULL, " +
                     "time_attended time NOT NULL, " +
                     "event_name text, " +
@@ -85,7 +85,6 @@ public class DatabaseManager {
             stmt.addBatch(create_attendance_t);
 
             int[] update_counts = stmt.executeBatch();
-            // TODO: send to console.
             for (int i : update_counts) System.out.println(i);
 
             stmt.close();
