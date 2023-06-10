@@ -54,38 +54,50 @@ public class DatabaseManager {
             Statement stmt = connection.createStatement();
 
             String create_users_t = "CREATE TABLE IF NOT EXISTS users (" +
-                    "user_id serial PRIMARY KEY, " +
+                    "user_id serial NOT NULL PRIMARY KEY, " +
                     "full_name text NOT NULL, " +
                     "fingerprint_id integer NOT NULL, " +
-                    "UNIQUE (full_name, fingerprint_id)" +
+                    "UNIQUE (fingerprint_id)" +
                     ")";
 
             String create_user_info_t = "CREATE TABLE IF NOT EXISTS user_info (" +
-                    "user_id integer REFERENCES users (user_id) ON DELETE CASCADE, " +
+                    "user_id integer NOT NULL, " +
                     "first_name text, " +
                     "middle_name text, " +
                     "last_name text, " +
                     "age smallint, " +
                     "gender text, " +
                     "phone_number text, " +
-                    "address text" +
-                    ")";
+                    "address text, " +
+                    "CONSTRAINT FK_INFO_USER " +
+                    "FOREIGN KEY (user_id) " +
+                    "REFERENCES users (user_id) " +
+                    "ON DELETE CASCADE " +
+                    "ON UPDATE CASCADE" +
+                    ") ";
 
             String create_attendance_t = "CREATE TABLE IF NOT EXISTS attendance (" +
-                    "attendance_id serial PRIMARY KEY, " +
-                    "user_id integer REFERENCES users (user_id) ON DELETE CASCADE, " +
+                    "attendance_id serial NOT NULL PRIMARY KEY, " +
+                    "user_id integer NOT NULL, " +
                     "date_attended date NOT NULL, " +
                     "time_attended time NOT NULL, " +
                     "event_name text, " +
-                    "event_location text" +
-                    ")";
+                    "event_location text, " +
+                    "CONSTRAINT FK_ATTENDANCE_USER " +
+                    "FOREIGN KEY (user_id) " +
+                    "REFERENCES users (user_id) " +
+                    "ON DELETE CASCADE " +
+                    "ON UPDATE CASCADE" +
+                    ") ";
 
             stmt.addBatch(create_users_t);
             stmt.addBatch(create_user_info_t);
             stmt.addBatch(create_attendance_t);
 
-            int[] update_counts = stmt.executeBatch();
-            for (int i : update_counts) System.out.println(i);
+            int[] create_table_feedback = stmt.executeBatch();
+            for (int feedback : create_table_feedback) {
+                System.out.println((feedback != Statement.EXECUTE_FAILED) ? "Init Table OK" : "Init Table NOT_OK");
+            }
 
             stmt.close();
             connection.close();
