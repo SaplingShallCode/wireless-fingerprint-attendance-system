@@ -1,6 +1,7 @@
 package core;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import utility.TempAttendanceData;
 import utility.TempEnrollmentData;
 import java.sql.*;
 
@@ -235,6 +236,81 @@ public class DatabaseManager {
             closeThis(get_user_id_stmt);
             closeThis(result);
             closeThis(user_info_stmt);
+            closeThis(connection);
+        }
+        return isSuccessful;
+    }
+
+
+    public boolean recordAttendance(TempAttendanceData attendance_data) {
+        Connection connection = null;
+        PreparedStatement find_userID_stmt = null;
+        PreparedStatement find_userFN_stmt = null;
+        PreparedStatement record_attendance_stmt = null;
+        ResultSet users_result = null;
+        ResultSet user_info_result = null;
+
+        boolean isSuccessful = true;
+        try {
+            connection = openConnection();
+
+            // Find a users record based on the fingerprint_id.
+            String find_userID_script = "SELECT user_id FROM users " +
+                    "WHERE fingerprint_id = ?";
+            find_userID_stmt = connection.prepareStatement(find_userID_script);
+            find_userID_stmt.setInt(1, attendance_data.getFingerprintID());
+            users_result = find_userID_stmt.executeQuery();
+
+            int user_id = 0;
+            if (users_result.next()) {
+                user_id = users_result.getInt("user_id");
+            }
+
+            if (user_id != 0) {
+                // Query the first_name of the attendee in the user_info table based on user_id.
+                String find_userFN_script = "SELECT first_name FROM user_info " +
+                        "WHERE user_id = ?";
+                find_userFN_stmt = connection.prepareStatement(find_userFN_script);
+                find_userFN_stmt.setInt(1, user_id);
+                user_info_result = find_userFN_stmt.executeQuery();
+                String attendee_first_name;
+
+                if (user_info_result.next()) {
+                    attendee_first_name = user_info_result.getString("first_name");
+                    attendance_data.setFirstName(attendee_first_name);
+                }
+
+                /* TODO: check if attendance in the current date already exists. */
+                // Record the attendance.
+                String record_attendance_script = "INSERT INTO attendance (" +
+                        "user_id, " +
+                        "date_attended, " +
+                        "time_attended, " +
+                        "event_name, " +
+                        "event_location) " +
+                        "VALUES (?, ?, ?, ?, ?)";
+                record_attendance_stmt = connection.prepareStatement(record_attendance_script);
+                record_attendance_stmt.setInt(1, user_id);
+                record_attendance_stmt.setDate(2, attendance_data.getDateNow());
+                record_attendance_stmt.setTime(3, attendance_data.getTimeNow());
+                record_attendance_stmt.setString(4, attendance_data.getEventName());
+                record_attendance_stmt.setString(5, attendance_data.getEventLocation());
+                record_attendance_stmt.executeUpdate();
+            }
+            else {
+                isSuccessful = false;
+            }
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+            isSuccessful = false;
+        }
+        finally {
+            closeThis(find_userID_stmt);
+            closeThis(find_userFN_stmt);
+            closeThis(record_attendance_stmt);
+            closeThis(users_result);
+            closeThis(user_info_result);
             closeThis(connection);
         }
         return isSuccessful;
