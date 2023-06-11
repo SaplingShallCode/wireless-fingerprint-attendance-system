@@ -2,9 +2,6 @@ package core;
 
 import java.io.*;
 import java.net.*;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -12,6 +9,7 @@ import gui.MainWindow;
 import utility.Const;
 import utility.LogHelper;
 import utility.LogTypes;
+import utility.TempEnrollmentData;
 
 
 /**
@@ -216,49 +214,41 @@ public class ServerManager implements Runnable {
                                 String address = input.readLine();
                                 String finger_id_unparsed = input.readLine();
 
-                                DatabaseManager databaseManager = new DatabaseManager();
+                                TempEnrollmentData enrollee_data = new TempEnrollmentData();
+                                enrollee_data.buildEnrolleeName(first_name, middle_name, last_name);
+                                enrollee_data.buildEnrolleeInfo(age, gender, phone_number, address);
+                                enrollee_data.setFingerprintId(finger_id_unparsed);
 
-                                try {
-                                    Connection connection = databaseManager.openConnection();
-                                    Statement statement = connection.createStatement();
-                                    String enroll = "INSERT INTO user_info (user_id, age, gender, phone_number, address, " +
-                                            "last_name, first_name, middle_name) VALUES (";
-                                    String insert = enroll + finger_id_unparsed + ", "
-                                            + age + ", "
-                                            + gender + ", "
-                                            + phone_number + ", "
-                                            + address + ", "
-                                            + last_name + ", "
-                                            + first_name + ", "
-                                            + middle_name + ")";
-                                    statement.executeUpdate(insert);
+                                DatabaseManager database_manager = new DatabaseManager();
+                                boolean isSuccessful = database_manager.enrollUser(enrollee_data);
 
-                                    statement.close();
-                                    connection.close();
-
-                                } catch (SQLException e) {
-                                    e.printStackTrace();
+                                if (isSuccessful) {
+                                    app.sendToConsole(LogHelper.log(
+                                            "Successfully enrolled: " +
+                                                    first_name + " " +
+                                                    middle_name + " " +
+                                                    last_name,
+                                            LogTypes.CLIENT
+                                    ));
+                                    app.sendToConsole(LogHelper.log(
+                                            "=======================     INFORMATION     =======================",
+                                            LogTypes.CLIENT
+                                    ));
+                                    app.sendToConsole(LogHelper.log("First Name : " + first_name, LogTypes.CLIENT));
+                                    app.sendToConsole(LogHelper.log("Middle Name: " + middle_name, LogTypes.CLIENT));
+                                    app.sendToConsole(LogHelper.log("Last Name  : " + last_name, LogTypes.CLIENT));
+                                    app.sendToConsole(LogHelper.log("Age        : " + age, LogTypes.CLIENT));
+                                    app.sendToConsole(LogHelper.log("Gender     : " + gender, LogTypes.CLIENT));
+                                    app.sendToConsole(LogHelper.log("Phone No.  : " + phone_number, LogTypes.CLIENT));
+                                    app.sendToConsole(LogHelper.log("Address    : " + address, LogTypes.CLIENT));
+                                    sendCommand("OK");
                                 }
-                                // TODO: Enroll to database here.
-
-                                app.sendToConsole(LogHelper.log(
-                                        "Successfully enrolled: " +
-                                                first_name + " " +
-                                                middle_name + " " +
-                                                last_name,
-                                        LogTypes.CLIENT
-                                ));
-                                app.sendToConsole(LogHelper.log(
-                                        "=======================     INFORMATION     =======================",
-                                        LogTypes.CLIENT
-                                ));
-                                app.sendToConsole(LogHelper.log("First Name : " + first_name, LogTypes.CLIENT));
-                                app.sendToConsole(LogHelper.log("Middle Name: " + middle_name, LogTypes.CLIENT));
-                                app.sendToConsole(LogHelper.log("Last Name  : " + last_name, LogTypes.CLIENT));
-                                app.sendToConsole(LogHelper.log("Age        : " + age, LogTypes.CLIENT));
-                                app.sendToConsole(LogHelper.log("Gender     : " + gender, LogTypes.CLIENT));
-                                app.sendToConsole(LogHelper.log("Phone No.  : " + phone_number, LogTypes.CLIENT));
-                                app.sendToConsole(LogHelper.log("Address    : " + address, LogTypes.CLIENT));
+                                else {
+                                    app.sendToConsole(LogHelper.log(
+                                            "An exception occurred when enrolling to database.", LogTypes.ERROR
+                                    ));
+                                    sendCommand("FAIL");
+                                }
                             }
                             case "scanFinger" -> {
                                 String finger_id_unparsed = input.readLine();
@@ -266,14 +256,11 @@ public class ServerManager implements Runnable {
                                         "Found match with finger ID: " + finger_id_unparsed,
                                         LogTypes.CLIENT
                                 ));
-                                // TODO: Check if the ID is stored in the database.
-
-
-
-
-
-
-
+                                /*
+                                    TODO: Check if the ID is stored in the database.
+                                        if ID exists then create attendance record.
+                                        else skip.
+                                 */
                             }
                         }
                     }
