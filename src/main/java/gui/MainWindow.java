@@ -122,8 +122,9 @@ public class MainWindow extends Application {
 
         DatabaseManager database_manager = new DatabaseManager();
         boolean isSuccessful = database_manager.initTables();
-        Text db_feedback = new Text();
-        db_feedback.setText((isSuccessful) ? "Init Database OK" : "Init Database FAIL");
+        String db_feedback = ((isSuccessful) ? "Init Database OK" : "Init Database FAIL");
+        LogTypes db_feedback_type = ((isSuccessful) ? LogTypes.INFO : LogTypes.ERROR);
+        sendToConsole(LogHelper.log(db_feedback, db_feedback_type));
         // if the user clicks the 'X' button on the login window then this
         // if-block will be skipped. the user must click the 'Enter' button
         // to continue to the main app.
