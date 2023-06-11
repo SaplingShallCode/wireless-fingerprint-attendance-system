@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 import gui.MainWindow;
-import utility.Const;
-import utility.LogHelper;
-import utility.LogTypes;
-import utility.TempEnrollmentData;
+import utility.*;
 
 
 /**
@@ -253,14 +250,39 @@ public class ServerManager implements Runnable {
                             case "scanFinger" -> {
                                 String finger_id_unparsed = input.readLine();
                                 app.sendToConsole(LogHelper.log(
-                                        "Found match with finger ID: " + finger_id_unparsed,
+                                        "Searching database for user with fingerprint ID: " + finger_id_unparsed,
                                         LogTypes.CLIENT
                                 ));
-                                /*
-                                    TODO: Check if the ID is stored in the database.
-                                        if ID exists then create attendance record.
-                                        else skip.
-                                 */
+
+                                DatabaseManager database_manager = new DatabaseManager();
+                                TempAttendanceData attendance_data = new TempAttendanceData();
+                                attendance_data.buildAttendanceData(
+                                        finger_id_unparsed,
+                                        "example_event",
+                                        "example_event_loc"
+                                );
+                                boolean isSuccessful = database_manager.recordAttendance(attendance_data);
+
+                                // TODO: update code to switch case.
+                                if (isSuccessful) {
+                                    sendCommand("OK");
+
+                                    String attendee_first_name = attendance_data.getFirstName();
+                                    app.sendToConsole(LogHelper.log(
+                                            "User " +
+                                                    attendee_first_name +
+                                                    " Matches fingerprint ID " +
+                                                    finger_id_unparsed,
+                                            LogTypes.CLIENT
+                                    ));
+                                    sendCommand(attendee_first_name);
+                                }
+                                else {
+                                    sendCommand("FAIL");
+                                    app.sendToConsole(LogHelper.log(
+                                            "An exception occurred when creating attendance record", LogTypes.ERROR
+                                    ));
+                                }
                             }
                         }
                     }
