@@ -4,6 +4,8 @@ import io.github.cdimascio.dotenv.Dotenv;
 import utility.TempAttendanceData;
 import utility.TempEnrollmentData;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The DatabaseManager class will handle the database communication and
@@ -314,5 +316,30 @@ public class DatabaseManager {
             closeThis(connection);
         }
         return isSuccessful;
+    }
+
+    // TODO: delete a record from the database
+    public boolean deleteRecord() {
+        return false;
+    }
+
+    // TODO: get a list of records based on a specific date (csv format)
+    public List<String> queryAttendanceByDate() {
+        return new ArrayList<>();
+    }
+
+    // TODO: get a list of records based on a specific event (csv format)
+    public List<String> queryAttendanceByEventName() {
+        return new ArrayList<>();
+    }
+
+    // TODO: get a list of all users enrolled (csv format)
+    public List<String> queryAllUsers() {
+        return new ArrayList<>();
+    }
+
+    // TODO: get a list of all attendance data (csv format)
+    public List<String> queryAllAttendanceData() {
+        return new ArrayList<>();
     }
 }
