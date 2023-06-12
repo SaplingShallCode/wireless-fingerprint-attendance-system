@@ -113,8 +113,14 @@ public class Const {
                 "reboot <client-name>",
                 "reboot"
         ),
-        EXPORT_CSV(
+        INIT_DB(
                 7,
+                "Initialize database tables. note: the postgres database must exist first.",
+                "init tables",
+                "init tables"
+        ),
+        EXPORT_CSV(
+                8,
                 "Export data from the database.",
                 "export open",
                 "export open"

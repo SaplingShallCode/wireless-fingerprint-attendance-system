@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import core.CommandExecutor;
 import core.ServerManager;
-import core.DatabaseManager;
 import utility.Const;
 import utility.LogHelper;
 import utility.LogTypes;
@@ -119,12 +118,6 @@ public class MainWindow extends Application {
                 Platform.exit();
             }
         });
-
-        DatabaseManager database_manager = new DatabaseManager();
-        boolean isSuccessful = database_manager.initTables();
-        String db_feedback = ((isSuccessful) ? "Init Database OK" : "Init Database FAIL");
-        LogTypes db_feedback_type = ((isSuccessful) ? LogTypes.INFO : LogTypes.ERROR);
-        sendToConsole(LogHelper.log(db_feedback, db_feedback_type));
         // if the user clicks the 'X' button on the login window then this
         // if-block will be skipped. the user must click the 'Enter' button
         // to continue to the main app.

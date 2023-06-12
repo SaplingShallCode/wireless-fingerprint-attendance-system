@@ -195,7 +195,7 @@ public class CommandExecutor {
                 client.disconnect();
             }
             case 5 -> {
-                LogHelper.debugLog("Case 4: show all clients info");
+                LogHelper.debugLog("Case 5: show all clients info");
                 ArrayList<ServerManager.FSClient> clients = server_manager.getClients();
 
                 if (!checkValidServer(app, server_manager)) break; // server must be running to proceed.
@@ -214,7 +214,7 @@ public class CommandExecutor {
             }
 
             case 6 -> {
-                LogHelper.debugLog("Case 5: reboot client");
+                LogHelper.debugLog("Case 6: reboot client");
                 if (!checkValidServer(app, server_manager) || !checkValidSyntax(app, input, 7))
                     break; // Server must be running and syntax should be valid to proceed.
 
@@ -230,6 +230,16 @@ public class CommandExecutor {
                 }
 
                 client.sendCommand("reboot");
+            }
+
+            case 7 -> {
+                LogHelper.debugLog("Case 7: init db tables");
+
+                DatabaseManager database_manager = new DatabaseManager();
+                boolean isSuccessful = database_manager.initTables();
+                String db_feedback = ((isSuccessful) ? "Init Database OK" : "Init Database FAIL");
+                LogTypes db_feedback_type = ((isSuccessful) ? LogTypes.INFO : LogTypes.ERROR);
+                app.sendToConsole(LogHelper.log(db_feedback, db_feedback_type));
             }
         }
     }
