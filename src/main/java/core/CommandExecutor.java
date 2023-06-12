@@ -194,7 +194,6 @@ public class CommandExecutor {
                 client.sendCommand("disconnect");
                 client.disconnect();
             }
-
             case 5 -> {
                 LogHelper.debugLog("Case 4: show all clients info");
                 ArrayList<ServerManager.FSClient> clients = server_manager.getClients();
@@ -212,7 +211,25 @@ public class CommandExecutor {
                     app.sendToConsole(LogHelper.log(
                             "|#| " + client_name + " | " + client_address + "|#|", LogTypes.INFO));
                 }
+            }
 
+            case 6 -> {
+                LogHelper.debugLog("Case 5: reboot client");
+                if (!checkValidServer(app, server_manager) || !checkValidSyntax(app, input, 7))
+                    break; // Server must be running and syntax should be valid to proceed.
+
+                String client_to_find = new StringBuilder(input).substring(11);
+                ServerManager.FSClient client;
+
+                try { client = findClient(app, server_manager, client_to_find); }
+                catch (NullPointerException npe) {
+                    app.sendToConsole(LogHelper.log(
+                            "Client does not exist.", LogTypes.INVALID
+                    ));
+                    break; // Client name should be valid before proceeding.
+                }
+
+                client.sendCommand("reboot");
             }
         }
     }
