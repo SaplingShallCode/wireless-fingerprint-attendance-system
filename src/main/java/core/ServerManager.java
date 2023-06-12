@@ -365,7 +365,7 @@ public class ServerManager implements Runnable {
 
 
         /**
-         * Generate an 8-character client name.
+         * Generate an 8-character client name. 62^8 name combinations.
          * @return the generated client name.
          * @implNote this method is only used in the constructor of the client.
          */
