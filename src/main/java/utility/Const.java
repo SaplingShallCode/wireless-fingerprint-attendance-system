@@ -106,6 +106,18 @@ public class Const {
                 "Display the remote address and port of all the clients.",
                 "clients info",
                 "clients info"
+        ),
+        REBOOT_CLIENT(
+                6,
+                "Send a reboot command to a client.",
+                "reboot <client-name>",
+                "reboot"
+        ),
+        EXPORT_CSV(
+                7,
+                "Export data from the database.",
+                "export open",
+                "export open"
         );
 
         private final int id;
