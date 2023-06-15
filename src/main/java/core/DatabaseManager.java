@@ -320,9 +320,39 @@ public class DatabaseManager {
         return isSuccessful;
     }
 
-    // TODO: delete a record from the database
     public boolean deleteRecord() {
-        return false;
+        boolean isSuccessful = true;
+        Connection connection = null;
+        PreparedStatement delete_rec = null;
+        ResultSet result = null;
+
+        try {
+            connection = openConnection();
+
+            int sample = 1;
+
+            String delete = "DELETE FROM user_info WHERE user_id = ?";
+            delete_rec = connection.prepareStatement(delete);
+            delete_rec.setInt(1, sample);
+            result = delete_rec.executeQuery();
+
+            if (result.next()) {
+                System.out.println("User deleted successfully!");
+            } else {
+                System.out.println("No user found with the specified ID.");
+                isSuccessful = false;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            isSuccessful = false;
+
+        } finally {
+            closeThis(delete_rec);
+            closeThis(result);
+            closeThis(connection);
+        }
+        return isSuccessful;
     }
 
     // TODO: get a list of records based on a specific date (csv format)
