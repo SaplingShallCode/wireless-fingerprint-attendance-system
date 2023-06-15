@@ -320,6 +320,7 @@ public class DatabaseManager {
         return isSuccessful;
     }
 
+    // TODO: must also delete all records of user from 'users' table and 'attendance' table
     public boolean deleteRecord() {
         boolean isSuccessful = true;
         Connection connection = null;
