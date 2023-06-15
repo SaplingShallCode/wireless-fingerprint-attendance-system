@@ -2,12 +2,12 @@ package core;
 
 import gui.EnrollWindow;
 import javafx.event.ActionEvent;
-import utility.Const;
+import utility.*;
 import gui.MainWindow;
-import utility.LogHelper;
-import utility.LogTypes;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -240,6 +240,31 @@ public class CommandExecutor {
                 String db_feedback = ((isSuccessful) ? "Init Database OK" : "Init Database FAIL");
                 LogTypes db_feedback_type = ((isSuccessful) ? LogTypes.INFO : LogTypes.ERROR);
                 app.sendToConsole(LogHelper.log(db_feedback, db_feedback_type));
+            }
+
+            case 8 -> {
+                LogHelper.debugLog("Case 8: export");
+
+                // TODO: get date input from console using export and pass as argument to query end exporter.
+                String date = ""; // < ---- edit this
+                DatabaseManager databaseManager = new DatabaseManager();
+                TempExportQueryData export_data = new TempExportQueryData();
+
+                boolean validFormat = export_data.buildDate(date);
+                if (!validFormat) {
+                    app.sendToConsole(LogHelper.log("Invalid date format. {yyyy-mm-dd}", LogTypes.INVALID));
+                    break;
+                }
+
+                List<String> data = databaseManager.queryAttendanceByDate(export_data);
+
+                // TODO: improve error handling and test command.
+                try {
+                    Exporter.buildAttendanceCSV(date, data);
+                }
+                catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
             }
         }
     }

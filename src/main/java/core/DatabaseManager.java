@@ -3,6 +3,7 @@ package core;
 import io.github.cdimascio.dotenv.Dotenv;
 import utility.TempAttendanceData;
 import utility.TempEnrollmentData;
+import utility.TempExportQueryData;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -315,6 +316,7 @@ public class DatabaseManager {
             closeThis(user_info_result);
             closeThis(connection);
         }
+
         return isSuccessful;
     }
 
@@ -324,8 +326,74 @@ public class DatabaseManager {
     }
 
     // TODO: get a list of records based on a specific date (csv format)
-    public List<String> queryAttendanceByDate() {
-        return new ArrayList<>();
+    public List<String> queryAttendanceByDate(TempExportQueryData export_data) {
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet date_query_result = null;
+        List<String> data = null;
+        try {
+            connection = openConnection();
+
+            String find_rbd_script = "SELECT * FROM attendance " +
+                    "WHERE date_attended = ?";
+            stmt = connection.prepareStatement(find_rbd_script);
+            stmt.setDate(1, export_data.getDateQuery());
+            date_query_result = stmt.executeQuery();
+
+            data = new ArrayList<>();
+            if (!date_query_result.next()) {
+                data.add("NO RESULTS FROM SPECIFIED DATE, 0, 0, 0, 0");
+            }
+            else {
+                do {
+                    String row_data;
+                    int user_id = date_query_result.getInt("user_id");
+                    Date date_attended = date_query_result.getDate("date_attended");
+                    Time time_attended = date_query_result.getTime("time_attended");
+                    String event_name = date_query_result.getString("event_name");
+                    String event_loc = date_query_result.getString("event_location");
+
+                    // query the full name from the users table.
+                    String user_query_script = "SELECT full_name FROM users " +
+                            "WHERE user_id = ?";
+                    PreparedStatement user_query_stmt = connection.prepareStatement(user_query_script);
+                    user_query_stmt.setInt(1, user_id);
+                    ResultSet user_query_result = user_query_stmt.executeQuery();
+
+                    String full_name;
+                    if (user_query_result.next()) {
+                        full_name = user_query_result.getString("full_name");
+                    }
+                    else {
+                        full_name = "NO USER FOUND";
+                    }
+
+                    closeThis(user_query_stmt);
+                    closeThis(user_query_result);
+
+                    row_data = String.format(
+                            "%s, %s, %s, %s, %s",
+                            full_name,
+                            date_attended,
+                            time_attended,
+                            event_name,
+                            event_loc
+                    );
+
+                    data.add(row_data);
+                }
+                while (date_query_result.next());
+            }
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        finally {
+            closeThis(stmt);
+            closeThis(date_query_result);
+            closeThis(connection);
+        }
+        return data;
     }
 
     // TODO: get a list of records based on a specific event (csv format)
