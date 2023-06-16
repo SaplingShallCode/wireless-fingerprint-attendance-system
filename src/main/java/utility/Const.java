@@ -142,6 +142,18 @@ public class Const {
                 "Export all attendance data from the database.",
                 "export 3 all",
                 "export"
+        ),
+        DISPLAY_CURRENT_EVENT_DATA(
+                9,
+                "Displays the current event that will be recorded to the database.",
+                "event see",
+                "event see"
+        ),
+        SET_EVENT_DATA(
+                10,
+                "Set the new event name and location of the event.",
+                "event new <name> <location>",
+                "event new"
         );
 
 

@@ -1,5 +1,6 @@
 package gui;
 
+import core.EventData;
 import javafx.application.Platform;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -56,6 +57,8 @@ public class MainWindow extends Application {
     private TextField command_field;
     private Button command_button;
 
+    private EventData event_data;
+
 
     /**
      * Initialize some resources needed for the application.
@@ -67,6 +70,9 @@ public class MainWindow extends Application {
         for (Const.Commands command: Const.Commands.values()) {
             commands_list.add(command.getSyntax() + " : " + command.getDescription());
         }
+        event_data = new EventData();
+        event_data.setCurrentEventName("Unspecified");
+        event_data.setCurrentEventLocation("Unspecified");
     }
 
 
@@ -351,6 +357,11 @@ public class MainWindow extends Application {
                         clients_list.add(client.getClientName());
                     }
                 });
+    }
+
+
+    public EventData getEventData() {
+        return event_data;
     }
 
 

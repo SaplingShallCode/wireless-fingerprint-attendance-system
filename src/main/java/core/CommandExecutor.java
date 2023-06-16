@@ -290,6 +290,36 @@ public class CommandExecutor {
                     app.sendToConsole(LogHelper.log("Data is null. Check if database tables exist.", LogTypes.ERROR));
                 }
             }
+
+            case 9 -> {
+                LogHelper.debugLog("Case 9: event see ");
+                EventData event_data = app.getEventData();
+
+                String current_event_name = event_data.getCurrentEventName();
+                String current_event_location = event_data.getCurrentEventLocation();
+
+                app.sendToConsole(LogHelper.log("Current Event Name: " + current_event_name, LogTypes.INFO));
+                app.sendToConsole(LogHelper.log("Current Event Location: " + current_event_location, LogTypes.INFO));
+
+            }
+
+            case 10 -> {
+                LogHelper.debugLog("Case 10: event new ");
+                EventData event_data = app.getEventData();
+                List<String> input_token = List.of(input.split(" "));
+
+                try {
+                    String new_name = input_token.get(2);
+                    String new_loc = input_token.get(3);
+                    event_data.setCurrentEventName(new_name);
+                    event_data.setCurrentEventLocation(new_loc);
+
+                    app.sendToConsole(LogHelper.log("Event data updated.", LogTypes.INFO));
+                }
+                catch (IndexOutOfBoundsException iobe) {
+                    app.sendToConsole(LogHelper.log("Missing arguments.", LogTypes.ERROR));
+                }
+            }
         }
     }
 }
