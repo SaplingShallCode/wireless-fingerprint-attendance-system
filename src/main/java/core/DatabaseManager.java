@@ -500,12 +500,66 @@ public class DatabaseManager {
 
 
     // TODO: get a list of all users enrolled (csv format)
-    public List<String> queryAllUsers() {
-        return new ArrayList<>();
-    }
+    
 
     // TODO: get a list of all attendance data (csv format)
     public List<String> queryAllAttendanceData() {
-        return new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet attendanceQueryResult = null;
+        List<String> data = new ArrayList<>();
+        try {
+            connection = openConnection();
+
+            String find_attendance_script = "SELECT * FROM attendance";
+            stmt = connection.prepareStatement(find_attendance_script);
+            attendanceQueryResult = stmt.executeQuery();
+
+            data.add("Attendee Name, Date Attended, Time Attended, Event Name, Event Location");
+
+            while (attendanceQueryResult.next()) {
+                String row_data;
+                int user_id = attendanceQueryResult.getInt("user_id");
+                Date date_attended = attendanceQueryResult.getDate("date_attended");
+                Time time_attended = attendanceQueryResult.getTime("time_attended");
+                String event_name = attendanceQueryResult.getString("event_name");
+                String event_loc = attendanceQueryResult.getString("event_location");
+
+                // Query the full name from the users table.
+                String user_query_script = "SELECT full_name FROM users " +
+                        "WHERE user_id = ?";
+                PreparedStatement user_query_stmt = connection.prepareStatement(user_query_script);
+                user_query_stmt.setInt(1, user_id);
+                ResultSet user_query_result = user_query_stmt.executeQuery();
+
+                String full_name;
+                if (user_query_result.next()) {
+                    full_name = user_query_result.getString("full_name");
+                } else {
+                    full_name = "NO USER FOUND";
+                }
+
+                closeThis(user_query_stmt);
+                closeThis(user_query_result);
+
+                row_data = String.format(
+                        "%s, %s, %s, %s, %s",
+                        full_name,
+                        date_attended,
+                        time_attended,
+                        event_name,
+                        event_loc
+                );
+
+                data.add(row_data);
+            }
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        } finally {
+            closeThis(stmt);
+            closeThis(attendanceQueryResult);
+            closeThis(connection);
+        }
+        return data;
     }
 }
