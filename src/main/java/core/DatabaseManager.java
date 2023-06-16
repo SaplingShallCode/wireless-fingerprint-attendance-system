@@ -501,6 +501,44 @@ public class DatabaseManager {
 
     // TODO: get a list of all users enrolled (csv format)
     
+    public List<String> queryAllUsers() {
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet userQueryResult = null;
+        List<String> data = new ArrayList<>();
+        try {
+            connection = openConnection();
+
+            String find_users_script = "SELECT * FROM users";
+            stmt = connection.prepareStatement(find_users_script);
+            userQueryResult = stmt.executeQuery();
+
+            data.add("User ID, Full Name, Email");
+
+            while (userQueryResult.next()) {
+
+                int user_id = userQueryResult.getInt("user_id");
+                String full_name = userQueryResult.getString("full_name");
+                String email = userQueryResult.getString("email");
+
+                String row_data = String.format(
+                        "%d, %s, %s",
+                        user_id,
+                        full_name,
+                        email
+                );
+                data.add(row_data);
+
+            }
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        } finally {
+            closeThis(stmt);
+            closeThis(userQueryResult);
+            closeThis(connection);
+        }
+        return data;
+    }
 
     // TODO: get a list of all attendance data (csv format)
     public List<String> queryAllAttendanceData() {
