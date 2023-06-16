@@ -119,12 +119,31 @@ public class Const {
                 "init tables",
                 "init tables"
         ),
-        EXPORT_CSV(
+        TOCSV_DATE(
                 8,
-                "Export data from the database.",
-                "export open",
-                "export open"
+                "Export data from the database according to a specified date.",
+                "export 1 <yyyy-mm-dd>",
+                "export"
+        ),
+        TOCSV_EVENT(
+                8,
+                "Export data from the database according to a specified event name.",
+                "export 2 <event-name>",
+                "export"
+        ),
+        TOCSV_ALLUSER(
+                8,
+                "Export all users from the database.",
+                "export 3 all",
+                "export"
+        ),
+        TOCSV_ALLATTENDANCE(
+                8,
+                "Export all attendance data from the database.",
+                "export 3 all",
+                "export"
         );
+
 
         private final int id;
         private final String description;
