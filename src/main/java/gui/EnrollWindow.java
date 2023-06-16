@@ -1,5 +1,6 @@
 package gui;
 
+import core.DatabaseManager;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -60,8 +61,11 @@ public class EnrollWindow {
     private TextField address_field;
     private TextField fingerprint_id_field;
 
+    private final DatabaseManager database_manager;
+
 
     public EnrollWindow(Stage stage) {
+        database_manager = new DatabaseManager();
         isSubmitted = false;
         enroll_stage = stage;
         enroll_stage.setAlwaysOnTop(true);
@@ -133,7 +137,9 @@ public class EnrollWindow {
         fingerprint_id_label = new Label("Fingerprint ID: ");
         fingerprint_id_field = new TextField();
         fingerprint_id_field.textProperty().addListener((observable, old_value, new_value) -> {
-            valid_fingerprint_id = fingerprint_id_field.getText().matches(
+            String fingerprint_id_unparsed = fingerprint_id_field.getText();
+            valid_fingerprint_id = false;
+            boolean validInput = fingerprint_id_unparsed.matches(
                     // 0-255
                     "^(2[0-5][0-5]|" +
                             "1[0-9][0-9]|" +
@@ -141,6 +147,10 @@ public class EnrollWindow {
                             "[1-9]" +
                             ")$"
             );
+            if (validInput) {
+                int fingerprint_id = Integer.parseInt(fingerprint_id_unparsed);
+                valid_fingerprint_id = !database_manager.checkFingerIDExists(fingerprint_id);
+            }
             updateButtonState();
         });
 

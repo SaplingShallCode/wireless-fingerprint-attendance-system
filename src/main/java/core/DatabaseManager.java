@@ -603,4 +603,34 @@ public class DatabaseManager {
         }
         return data;
     }
+
+
+    public boolean checkFingerIDExists(int fingerprint_id) {
+        boolean idExists = false;
+        Connection connection = null;
+        PreparedStatement query_stmt = null;
+        ResultSet result_set = null;
+        try {
+            connection = openConnection();
+            String query_script = "SELECT * FROM users " +
+                    "WHERE fingerprint_id = ?";
+            query_stmt = connection.prepareStatement(query_script);
+            query_stmt.setInt(1, fingerprint_id);
+            result_set = query_stmt.executeQuery();
+
+            if (result_set.next()) {
+                idExists = true;
+            }
+
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        finally {
+            closeThis(query_stmt);
+            closeThis(result_set);
+            closeThis(connection);
+        }
+        return idExists;
+    }
 }
