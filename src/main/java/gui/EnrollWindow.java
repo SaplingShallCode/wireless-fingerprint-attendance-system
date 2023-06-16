@@ -32,6 +32,7 @@ public class EnrollWindow {
     private boolean valid_age;
     private boolean valid_phone_number;
     private boolean valid_fingerprint_id;
+    private boolean valid_gender_selection;
     private boolean isSubmitted;
 
     private VBox root_pane;
@@ -111,6 +112,11 @@ public class EnrollWindow {
                 "Female",
                 "Other"
         );
+        gender_field.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            valid_gender_selection = !gender_field.getValue()
+                                                  .equals("Select an option...");
+            updateButtonState();
+        });
         phone_number_field = new TextField();
         phone_number_field.textProperty().addListener((observable, oldValue, newValue) -> {
             // Check if valid PH phone number.
@@ -220,7 +226,7 @@ public class EnrollWindow {
 
     private void updateButtonState() {
         submit_button.setDisable(true);
-        if (valid_fingerprint_id && valid_age && valid_phone_number) {
+        if (valid_fingerprint_id && valid_age && valid_phone_number && valid_gender_selection) {
             submit_button.setDisable(false);
         }
     }
