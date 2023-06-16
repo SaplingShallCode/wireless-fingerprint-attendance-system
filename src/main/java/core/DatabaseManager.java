@@ -334,16 +334,19 @@ public class DatabaseManager {
 
             int sample = 1;
 
-            String delete = "DELETE FROM user_info WHERE user_id = ?";
-            delete_rec = connection.prepareStatement(delete);
-            delete_rec.setInt(1, sample);
-            result = delete_rec.executeQuery();
+            String[] delete = { "DELETE FROM user_info WHERE user_id = ?", "DELETE FROM users WHERE user_id = ?",
+                    "DELETE FROM users WHERE attendance = ?" };
+            for (String sql : delete) {
+                delete_rec = connection.prepareStatement(sql);
+                delete_rec.setInt(1, sample);
+                result = delete_rec.executeQuery();
 
-            if (result.next()) {
-                System.out.println("User deleted successfully!");
-            } else {
-                System.out.println("No user found with the specified ID.");
-                isSuccessful = false;
+                if (result.next()) {
+                    System.out.println("User deleted successfully!");
+                } else {
+                    System.out.println("No user found with the specified ID.");
+                    isSuccessful = false;
+                }
             }
 
         } catch (SQLException e) {
