@@ -256,10 +256,11 @@ public class ServerManager implements Runnable {
 
                                 DatabaseManager database_manager = new DatabaseManager();
                                 TempAttendanceData attendance_data = new TempAttendanceData();
+                                EventData event_data = app.getEventData();
                                 attendance_data.buildAttendanceData(
                                         finger_id_unparsed,
-                                        "example_event",
-                                        "example_event_loc"
+                                        event_data.getCurrentEventName(),
+                                        event_data.getCurrentEventLocation()
                                 );
                                 boolean isSuccessful = database_manager.recordAttendance(attendance_data);
 
