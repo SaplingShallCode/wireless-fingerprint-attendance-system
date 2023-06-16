@@ -218,7 +218,7 @@ public class CommandExecutor {
                 if (!checkValidServer(app, server_manager) || !checkValidSyntax(app, input, 7))
                     break; // Server must be running and syntax should be valid to proceed.
 
-                String client_to_find = new StringBuilder(input).substring(11);
+                String client_to_find = new StringBuilder(input).substring(7);
                 ServerManager.FSClient client;
 
                 try { client = findClient(app, server_manager, client_to_find); }
