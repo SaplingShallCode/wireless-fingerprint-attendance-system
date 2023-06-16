@@ -69,24 +69,6 @@ public class CommandExecutor {
 
 
     /**
-     * Checks if the syntax of the input is valid.
-     * @param app the MainWindow object.
-     * @param input the user's console input.
-     * @param valid_length the valid length if the user's input.
-     * @return false if the syntax is invalid.
-     */
-    private static boolean checkValidSyntax(MainWindow app, String input, int valid_length) {
-        if (input.length() < valid_length) {
-            app.sendToConsole(LogHelper.log(
-                    "Invalid syntax.", LogTypes.INVALID
-            ));
-            return false;
-        }
-        return true;
-    }
-
-
-    /**
      * Find the client from the list of all connected clients in the server.
      * @param server_manager the ServerManager object.
      * @param client_to_find the client name provided by the user.
@@ -126,82 +108,94 @@ public class CommandExecutor {
                         "Not a recognizable command. See list of available commands.", LogTypes.INVALID
                 ));
             }
+
+
             case 1 -> {
                 LogHelper.debugLog("Case 1: Start server");
                 app.start_server(new ActionEvent());
             }
+
+
             case 2 -> {
                 LogHelper.debugLog("Case 2: Stop server");
                 app.stop_server(new ActionEvent());
             }
+
+
             case 3 -> {
                 LogHelper.debugLog("Case 3: enroll");
+                List<String> input_token = List.of(input.split(" "));
 
-                if (!checkValidServer(app, server_manager) || !checkValidSyntax(app, input, 7))
-                    break; // Server must be running and syntax should be valid to proceed.
+                if (!checkValidServer(app, server_manager))
+                    break; // Server must be running to proceed.
 
-                // Check the client name
-                String client_to_find = new StringBuilder(input).substring(7);
-                ServerManager.FSClient client;
+                try {
+                    String client_to_find = input_token.get(1);
+                    ServerManager.FSClient client = findClient(app, server_manager, client_to_find);
 
-                try { client = findClient(app, server_manager, client_to_find); }
+                    EnrollWindow enroll_window = app.getEnrollWindow();
+                    if (!enroll_window.getIsSubmitted())
+                        break; // Must click enroll window submit button to proceed.
+
+                    String first_name = enroll_window.getFirstName();
+                    String middle_name = enroll_window.getMiddleName();
+                    String last_name =  enroll_window.getLastName();
+                    String age = enroll_window.getAge();
+                    String gender = enroll_window.getGender();
+                    String phone_number = enroll_window.getPhoneNumber();
+                    String address = enroll_window.getAddress();
+                    int finger_id = enroll_window.getFingerprintId();
+
+                    client.sendCommand("enroll");
+                    client.sendCommand(Integer.toString(finger_id));
+                    client.sendCommand(first_name);
+                    client.sendCommand(middle_name);
+                    client.sendCommand(last_name);
+                    client.sendCommand(age);
+                    client.sendCommand(gender);
+                    client.sendCommand(phone_number);
+                    client.sendCommand(address);
+                }
                 catch (NullPointerException npe) {
                     app.sendToConsole(LogHelper.log(
-                            "Client does not exist.", LogTypes.INVALID
+                            "Client does not exist.", LogTypes.ERROR
                     ));
-                    break; // Client name should be valid before proceeding.
                 }
-
-                EnrollWindow enroll_window = app.getEnrollWindow();
-                if (!enroll_window.getIsSubmitted())
-                    break; // Must click enroll window submit button to proceed.
-
-                String first_name = enroll_window.getFirstName();
-                String middle_name = enroll_window.getMiddleName();
-                String last_name =  enroll_window.getLastName();
-                String age = enroll_window.getAge();
-                String gender = enroll_window.getGender();
-                String phone_number = enroll_window.getPhoneNumber();
-                String address = enroll_window.getAddress();
-                int finger_id = enroll_window.getFingerprintId();
-
-                client.sendCommand("enroll");
-                client.sendCommand(Integer.toString(finger_id));
-                client.sendCommand(first_name);
-                client.sendCommand(middle_name);
-                client.sendCommand(last_name);
-                client.sendCommand(age);
-                client.sendCommand(gender);
-                client.sendCommand(phone_number);
-                client.sendCommand(address);
+                catch (IndexOutOfBoundsException ibe) {
+                    app.sendToConsole(LogHelper.log("Missing arguments.", LogTypes.INVALID));
+                }
             }
+
+
             case 4 -> {
                 LogHelper.debugLog("Case 4: disconnect");
+                List<String> input_token = List.of(input.split(" "));
 
-                if (!checkValidServer(app, server_manager) || !checkValidSyntax(app, input, 11))
-                    break; // Server must be running and syntax should be valid to proceed.
+                if (!checkValidServer(app, server_manager))
+                    break; // Server must be running to proceed.
 
-                String client_to_find = new StringBuilder(input).substring(11);
-                ServerManager.FSClient client;
-
-                try { client = findClient(app, server_manager, client_to_find); }
-                catch (NullPointerException npe) {
-                    app.sendToConsole(LogHelper.log(
-                            "Client does not exist.", LogTypes.INVALID
-                    ));
-                    break; // Client name should be valid before proceeding.
+                try {
+                    String client_to_find = input_token.get(1);
+                    ServerManager.FSClient client = findClient(app, server_manager, client_to_find);
+                    client.sendCommand("disconnect");
+                    client.disconnect();
                 }
-                client.sendCommand("disconnect");
-                client.disconnect();
+                catch (NullPointerException npe) {
+                    app.sendToConsole(LogHelper.log("Client does not exist.", LogTypes.ERROR));
+                }
+                catch (IndexOutOfBoundsException ibe) {
+                    app.sendToConsole(LogHelper.log("Missing arguments.", LogTypes.INVALID));
+                }
             }
+
+
             case 5 -> {
                 LogHelper.debugLog("Case 5: show all clients info");
                 ArrayList<ServerManager.FSClient> clients = server_manager.getClients();
 
                 if (!checkValidServer(app, server_manager)) break; // server must be running to proceed.
                 if (clients.size() == 0) {
-                    app.sendToConsole(LogHelper.log(
-                            "No clients found.", LogTypes.ERROR));
+                    app.sendToConsole(LogHelper.log("No clients found.", LogTypes.ERROR));
                     break; // terminate execution of command if there are no clients connected.
                 }
 
@@ -213,24 +207,27 @@ public class CommandExecutor {
                 }
             }
 
+
             case 6 -> {
                 LogHelper.debugLog("Case 6: reboot client");
-                if (!checkValidServer(app, server_manager) || !checkValidSyntax(app, input, 7))
-                    break; // Server must be running and syntax should be valid to proceed.
+                List<String> input_token = List.of(input.split(" "));
 
-                String client_to_find = new StringBuilder(input).substring(7);
-                ServerManager.FSClient client;
+                if (!checkValidServer(app, server_manager))
+                    break; // Server must be running to proceed.
 
-                try { client = findClient(app, server_manager, client_to_find); }
-                catch (NullPointerException npe) {
-                    app.sendToConsole(LogHelper.log(
-                            "Client does not exist.", LogTypes.INVALID
-                    ));
-                    break; // Client name should be valid before proceeding.
+                try {
+                    String client_to_find = input_token.get(1);
+                    ServerManager.FSClient client = findClient(app, server_manager, client_to_find);
+                    client.sendCommand("reboot");
                 }
-
-                client.sendCommand("reboot");
+                catch (NullPointerException npe) {
+                    app.sendToConsole(LogHelper.log("Client does not exist.", LogTypes.ERROR));
+                }
+                catch (IndexOutOfBoundsException ibe) {
+                    app.sendToConsole(LogHelper.log("Missing arguments.", LogTypes.INVALID));
+                }
             }
+
 
             case 7 -> {
                 LogHelper.debugLog("Case 7: init db tables");
@@ -241,6 +238,7 @@ public class CommandExecutor {
                 LogTypes db_feedback_type = ((isSuccessful) ? LogTypes.INFO : LogTypes.ERROR);
                 app.sendToConsole(LogHelper.log(db_feedback, db_feedback_type));
             }
+
 
             case 8 -> {
                 LogHelper.debugLog("Case 8: export ");
@@ -283,7 +281,7 @@ public class CommandExecutor {
                     }
                 }
                 catch (IndexOutOfBoundsException ibe) {
-                    app.sendToConsole(LogHelper.log("Missing argument.", LogTypes.ERROR));
+                    app.sendToConsole(LogHelper.log("Missing arguments.", LogTypes.INVALID));
                 }
                 catch (IOException ioe) {
                     app.sendToConsole(LogHelper.log("An IO Error occurred when exporting.", LogTypes.ERROR));
@@ -292,6 +290,7 @@ public class CommandExecutor {
                     app.sendToConsole(LogHelper.log("Data is null. Check if database tables exist.", LogTypes.ERROR));
                 }
             }
+
 
             case 9 -> {
                 LogHelper.debugLog("Case 9: event see ");
@@ -304,6 +303,7 @@ public class CommandExecutor {
                 app.sendToConsole(LogHelper.log("Current Event Location: " + current_event_location, LogTypes.INFO));
 
             }
+
 
             case 10 -> {
                 LogHelper.debugLog("Case 10: event new ");
@@ -319,7 +319,7 @@ public class CommandExecutor {
                     app.sendToConsole(LogHelper.log("Event data updated.", LogTypes.INFO));
                 }
                 catch (IndexOutOfBoundsException iobe) {
-                    app.sendToConsole(LogHelper.log("Missing arguments.", LogTypes.ERROR));
+                    app.sendToConsole(LogHelper.log("Missing arguments.", LogTypes.INVALID));
                 }
             }
         }
