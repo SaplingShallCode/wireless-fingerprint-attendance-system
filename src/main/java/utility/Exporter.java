@@ -35,7 +35,7 @@ public class Exporter {
 
         // append each data to the file.
         BufferedWriter csv_writer = new BufferedWriter(new FileWriter(csv_file));
-        csv_writer.write("Attendee Name, Date Attended, Time Attended, Event Name, Event Location");
+
         for (String line : data) {
             csv_writer.newLine();
             csv_writer.write(line);

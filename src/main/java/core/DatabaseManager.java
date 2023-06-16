@@ -372,6 +372,7 @@ public class DatabaseManager {
             date_query_result = stmt.executeQuery();
 
             data = new ArrayList<>();
+            data.add("Attendee Name, Date Attended, Time Attended, Event Name, Event Location");
             if (!date_query_result.next()) {
                 data.add("NO RESULTS FROM SPECIFIED DATE, 0, 0, 0, 0");
             }
