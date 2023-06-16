@@ -9,6 +9,18 @@ See also the client [repo](https://github.com/Chewycide/client-for-wireless-fing
 
 ---
 
+### NodeMCU Client Schematic Diagram
+
+![scanner_diagram_3V.png](docs/scanner_diagram_3V.png)  
+
+![scanner_diagram_5V.png](docs/scanner_diagram_5V.png)
+
+
+- [Download pdf](docs/wireless_fingerprint_attendance_logger.pdf)  
+- [Download KiCad schematic](docs/wireless_fingerprint_attendance_logger.kicad_sch)
+
+---
+
 ### Setting up the workspace as a contributor
 *For IntelliJ Users*
 - Create a *new* project from version control.
