@@ -122,25 +122,25 @@ public class Const {
         TOCSV_DATE(
                 8,
                 "Export data from the database according to a specified date.",
-                "export 1 <yyyy-mm-dd>",
+                "export date <yyyy-mm-dd>",
                 "export"
         ),
         TOCSV_EVENT(
                 8,
                 "Export data from the database according to a specified event name.",
-                "export 2 <event-name>",
+                "export event <event-name>",
                 "export"
         ),
         TOCSV_ALLUSER(
                 8,
                 "Export all users from the database.",
-                "export 3 all",
+                "export all_users",
                 "export"
         ),
         TOCSV_ALLATTENDANCE(
                 8,
                 "Export all attendance data from the database.",
-                "export 3 all",
+                "export all_attendance",
                 "export"
         ),
         DISPLAY_CURRENT_EVENT_DATA(

@@ -247,16 +247,18 @@ public class CommandExecutor {
 
                 DatabaseManager databaseManager = new DatabaseManager();
                 TempExportQueryData export_data = new TempExportQueryData();
+                List<String> input_token = List.of(input.split(" "));
+
                 List<String> data;
 
-                String export_type = input.substring(7, 8);
-                String date;
-                boolean validFormat;
-
                 try {
+                    String export_type = input_token.get(1);
+                    String date;
+                    boolean validFormat;
+
                     switch (export_type) {
-                        case "1" -> {
-                            date = input.substring(9);
+                        case "date" -> {
+                            date = input_token.get(2);
                             validFormat = export_data.buildDate(date);
                             if (!validFormat) {
                                 app.sendToConsole(LogHelper.log("Invalid date format. {yyyy-mm-dd}", LogTypes.INVALID));
@@ -271,16 +273,16 @@ public class CommandExecutor {
                             app.sendToConsole(LogHelper.log("Export: " + filename, LogTypes.INFO));
                         }
 
-                        case "2" -> {/* TODO: export by event name */}
-                        case "3" -> {/* TODO: export all users  */ }
-                        case "4" -> {/* TODO: export all attendance data */}
+                        case "event" -> {/* TODO: export by event name */}
+                        case "all_user" -> {/* TODO: export all users  */ }
+                        case "all_attendance" -> {/* TODO: export all attendance data */}
                         default -> {
                             app.sendToConsole(LogHelper.log("Invalid syntax.", LogTypes.INVALID));
                             break command_switch;
                         }
                     }
                 }
-                catch (StringIndexOutOfBoundsException sibe) {
+                catch (IndexOutOfBoundsException ibe) {
                     app.sendToConsole(LogHelper.log("Missing argument.", LogTypes.ERROR));
                 }
                 catch (IOException ioe) {
