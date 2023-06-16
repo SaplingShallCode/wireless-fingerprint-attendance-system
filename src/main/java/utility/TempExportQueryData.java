@@ -13,7 +13,7 @@ public class TempExportQueryData {
 
     public boolean buildDate(String date_string) {
         // TODO: test regex string @https://regexr.com
-        boolean validFormat = date_string.matches("^[1-9]{4}-((1[0-2])|(0?[1-9]))-\\d{1,2}$");
+        boolean validFormat = date_string.matches("^\\d{4}-((1[0-2])|(0?[1-9]))-\\d{1,2}$");
         if (validFormat) {
             this.date_query = Date.valueOf(date_string);
         }
