@@ -17,7 +17,7 @@ public class Exporter {
      * @param data the list of String data that will be appended to the file.
      * @throws IOException if an I/O error occurs.
      */
-    public static void buildAttendanceCSV(String csv_filename, List<String> data) throws IOException {
+    public static String buildAttendanceCSV(String csv_filename, List<String> data) throws IOException {
         int duplicateIndex = 0;
         String csv_fullfilename = csv_filename + ".csv";
         String current_directory = System.getProperty("user.dir");
@@ -41,6 +41,8 @@ public class Exporter {
             csv_writer.write(line);
         }
 
+
         csv_writer.close();
+        return csv_fullfilename;
     }
 }

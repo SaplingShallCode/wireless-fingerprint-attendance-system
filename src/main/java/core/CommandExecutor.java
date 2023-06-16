@@ -218,7 +218,7 @@ public class CommandExecutor {
                 if (!checkValidServer(app, server_manager) || !checkValidSyntax(app, input, 7))
                     break; // Server must be running and syntax should be valid to proceed.
 
-                String client_to_find = new StringBuilder(input).substring(11);
+                String client_to_find = new StringBuilder(input).substring(7);
                 ServerManager.FSClient client;
 
                 try { client = findClient(app, server_manager, client_to_find); }
@@ -247,34 +247,47 @@ public class CommandExecutor {
 
                 DatabaseManager databaseManager = new DatabaseManager();
                 TempExportQueryData export_data = new TempExportQueryData();
-                List<String> data = null;
+                List<String> data;
 
                 String export_type = input.substring(7, 8);
-                String date = null;
+                String date;
                 boolean validFormat;
 
-                switch (export_type) {
-                    case "1" -> {
-                        date = input.substring(9); // < ---- edit this
-                        validFormat = export_data.buildDate(date);
-                        if (!validFormat) {
-                            app.sendToConsole(LogHelper.log("Invalid date format. {yyyy-mm-dd}", LogTypes.INVALID));
+                try {
+                    switch (export_type) {
+                        case "1" -> {
+                            date = input.substring(9);
+                            validFormat = export_data.buildDate(date);
+                            if (!validFormat) {
+                                app.sendToConsole(LogHelper.log("Invalid date format. {yyyy-mm-dd}", LogTypes.INVALID));
+                                break command_switch;
+                            }
+                            data = databaseManager.queryAttendanceByDate(export_data);
+
+                            if (data == null)
+                                throw new NullPointerException();
+
+                            String filename = Exporter.buildAttendanceCSV(date, data);
+                            app.sendToConsole(LogHelper.log("Export: " + filename, LogTypes.INFO));
+                        }
+
+                        case "2" -> {/* TODO: export by event name */}
+                        case "3" -> {/* TODO: export all users  */ }
+                        case "4" -> {/* TODO: export all attendance data */}
+                        default -> {
+                            app.sendToConsole(LogHelper.log("Invalid syntax.", LogTypes.INVALID));
                             break command_switch;
                         }
-                        data = databaseManager.queryAttendanceByDate(export_data);
                     }
-
-                    case "2" -> {/* TODO: export by event name */}
-                    case "3" -> {/* TODO: export all users  */ }
-                    case "4" -> {/* TODO: export all attendance data */}
                 }
-
-                // TODO: improve error handling and test command.
-                try {
-                    Exporter.buildAttendanceCSV(date, data);
+                catch (StringIndexOutOfBoundsException sibe) {
+                    app.sendToConsole(LogHelper.log("Missing argument.", LogTypes.ERROR));
                 }
                 catch (IOException ioe) {
                     app.sendToConsole(LogHelper.log("An IO Error occurred when exporting.", LogTypes.ERROR));
+                }
+                catch (NullPointerException npe) {
+                    app.sendToConsole(LogHelper.log("Data is null. Check if database tables exist.", LogTypes.ERROR));
                 }
             }
         }
