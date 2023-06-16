@@ -119,7 +119,7 @@ public class CommandExecutor {
         int id = checkValidCommand(input);
         ServerManager server_manager = app.getServerManager();
 
-        switch (id) {
+        command_switch: switch (id) {
             case 0 -> {
                 LogHelper.debugLog("Not a valid command");
                 app.sendToConsole(LogHelper.log(
@@ -243,27 +243,38 @@ public class CommandExecutor {
             }
 
             case 8 -> {
-                LogHelper.debugLog("Case 8: export");
+                LogHelper.debugLog("Case 8: export ");
 
-                // TODO: get date input from console using export and pass as argument to query end exporter.
-                String date = ""; // < ---- edit this
                 DatabaseManager databaseManager = new DatabaseManager();
                 TempExportQueryData export_data = new TempExportQueryData();
+                List<String> data = null;
 
-                boolean validFormat = export_data.buildDate(date);
-                if (!validFormat) {
-                    app.sendToConsole(LogHelper.log("Invalid date format. {yyyy-mm-dd}", LogTypes.INVALID));
-                    break;
+                String export_type = input.substring(7, 8);
+                String date = null;
+                boolean validFormat;
+
+                switch (export_type) {
+                    case "1" -> {
+                        date = input.substring(9); // < ---- edit this
+                        validFormat = export_data.buildDate(date);
+                        if (!validFormat) {
+                            app.sendToConsole(LogHelper.log("Invalid date format. {yyyy-mm-dd}", LogTypes.INVALID));
+                            break command_switch;
+                        }
+                        data = databaseManager.queryAttendanceByDate(export_data);
+                    }
+
+                    case "2" -> {/* TODO: export by event name */}
+                    case "3" -> {/* TODO: export all users  */ }
+                    case "4" -> {/* TODO: export all attendance data */}
                 }
-
-                List<String> data = databaseManager.queryAttendanceByDate(export_data);
 
                 // TODO: improve error handling and test command.
                 try {
                     Exporter.buildAttendanceCSV(date, data);
                 }
                 catch (IOException ioe) {
-                    ioe.printStackTrace();
+                    app.sendToConsole(LogHelper.log("An IO Error occurred when exporting.", LogTypes.ERROR));
                 }
             }
         }
