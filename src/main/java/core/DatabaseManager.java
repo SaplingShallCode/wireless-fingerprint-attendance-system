@@ -4,6 +4,8 @@ import io.github.cdimascio.dotenv.Dotenv;
 import utility.TempAttendanceData;
 import utility.TempEnrollmentData;
 import utility.TempExportQueryData;
+
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -429,9 +431,73 @@ public class DatabaseManager {
     }
 
     // TODO: get a list of records based on a specific event (csv format)
+
     public List<String> queryAttendanceByEventName() {
-        return new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet eventQueryResult = null;
+        List<String> data = new ArrayList<>();
+
+        String event = "Event1";
+        
+        try {
+            connection = openConnection();
+
+            String find_event_script = "SELECT * FROM attendance " +
+                    "WHERE event_name = ?";
+            stmt = connection.prepareStatement(find_event_script);
+            stmt.setString(1, event);
+            eventQueryResult = stmt.executeQuery();
+
+            data.add("Attendee Name, Date Attended, Time Attended, Event Name, Event Location");
+            while (eventQueryResult.next()) {
+                String row_data;
+                int user_id = eventQueryResult.getInt("user_id");
+                Date date_attended = eventQueryResult.getDate("date_attended");
+                Time time_attended = eventQueryResult.getTime("time_attended");
+                String event_name = eventQueryResult.getString("event_name");
+                String event_loc = eventQueryResult.getString("event_location");
+
+                // query the full name from the users table.
+                String user_query_script = "SELECT full_name FROM users " +
+                        "WHERE user_id = ?";
+                PreparedStatement user_query_stmt = connection.prepareStatement(user_query_script);
+                user_query_stmt.setInt(1, user_id);
+                ResultSet user_query_result = user_query_stmt.executeQuery();
+
+                String full_name;
+                if (user_query_result.next()) {
+                    full_name = user_query_result.getString("full_name");
+                } else {
+                    full_name = "NO USER FOUND";
+                }
+
+                closeThis(user_query_stmt);
+                closeThis(user_query_result);
+
+                row_data = String.format(
+                        "%s, %s, %s, %s, %s",
+                        full_name,
+                        date_attended,
+                        time_attended,
+                        event_name,
+                        event_loc
+                );
+
+                data.add(row_data);
+            }
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        finally {
+            closeThis(stmt);
+            closeThis(eventQueryResult);
+            closeThis(connection);
+        }
+        return data;
     }
+
 
     // TODO: get a list of all users enrolled (csv format)
     public List<String> queryAllUsers() {
