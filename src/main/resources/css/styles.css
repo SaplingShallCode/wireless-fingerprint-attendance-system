@@ -81,7 +81,7 @@
     -fx-background-color: transparent;
 }
 
-.console-container > .corner {      /* The corners of the scrollbar */
+.corner {      /* The corners of the scrollbar */
     -fx-background-color: #232832;
 }
 
