@@ -186,16 +186,50 @@ public class ServerManager implements Runnable {
 
                 // The client mainloop.
                 String message;
+                long timeDifference;
+                long currentMillisTime;
+                long previousMillisTime = 0;
+                long responseTime;
+
                 while (is_connected) {
+                    currentMillisTime = System.currentTimeMillis();
+                    timeDifference = currentMillisTime - previousMillisTime;
+
+                    // part of heartbeat mechanism
+                    if (timeDifference >= Const.DISCON_THRESHOLD) {
+                        if (!(timeDifference >= Const.DISCON_THRESHOLD * 2)) {
+                            app.sendToConsole(LogHelper.log(
+                                    String.format("No response from client %s in %dms" ,
+                                            client_name,
+                                            Const.DISCON_THRESHOLD),
+                                    LogTypes.WARNING
+                            ));
+                            disconnect();
+                        }
+                    }
+
 
                     // detect if the input buffer is not empty.
                     if (input.ready()) {
                         message = input.readLine();
-                        app.sendToConsole(LogHelper.log(message, LogTypes.CLIENT));
+                        // app.sendToConsole(LogHelper.log(message, LogTypes.CLIENT));
 
                         // Events
                         switch (message) {
+                            case "beat" -> {
+                                // part of heartbeat mechanism
+                                responseTime = System.currentTimeMillis();
+                                app.sendToConsole(LogHelper.log(
+                                        String.format("client %s response time %dms",
+                                                client_name,
+                                                (responseTime - currentMillisTime)),
+                                        LogTypes.SERVER
+                                ));
+
+                                sendCommand("heartbeat");
+                            }
                             case "disconnect" -> {
+
                                 app.sendToConsole(LogHelper.log(
                                         "Closing connection for client " + client_name, LogTypes.SERVER
                                 ));
@@ -286,6 +320,10 @@ public class ServerManager implements Runnable {
                                 }
                             }
                         }
+
+                        // update the time for the heartbeat mechanism
+                        currentMillisTime = System.currentTimeMillis();
+                        previousMillisTime = currentMillisTime;
                     }
                     if (this.isInterrupted()) {
                         throw new InterruptedException();
