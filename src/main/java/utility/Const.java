@@ -15,6 +15,10 @@ public class Const {
     private Const() {}
 
 
+    // for the server - client heartbeat mechanism
+    public static final long HEARTBEAT_INTERVAL = 5000;
+    public static final long DISCON_THRESHOLD = 2 * HEARTBEAT_INTERVAL;
+
     public static final String CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     public static final String ICON_PATH = "img/icondefault.png";
     public static final String ICON64_PATH = "img/icon64x64.png";
