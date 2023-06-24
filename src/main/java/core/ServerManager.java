@@ -301,7 +301,6 @@ public class ServerManager implements Runnable {
                                 );
                                 boolean isSuccessful = database_manager.recordAttendance(attendance_data);
 
-                                // TODO: update code to switch case.
                                 if (isSuccessful) {
                                     sendCommand("OK");
 
