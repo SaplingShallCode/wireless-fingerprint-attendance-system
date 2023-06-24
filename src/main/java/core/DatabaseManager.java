@@ -5,7 +5,6 @@ import utility.TempAttendanceData;
 import utility.TempEnrollmentData;
 import utility.TempExportQueryData;
 
-import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -322,40 +321,38 @@ public class DatabaseManager {
         return isSuccessful;
     }
 
-    // TODO: must also delete all records of user from 'users' table and 'attendance' table
-    public boolean deleteRecord() {
+
+    public boolean deleteUserRecords(int user_id) {
         boolean isSuccessful = true;
         Connection connection = null;
-        PreparedStatement delete_rec = null;
-        ResultSet result = null;
-
+        PreparedStatement del_stmt = null;
         try {
             connection = openConnection();
 
-            int sample = 1;
+            String del_users_script = "DELETE FROM users " +
+                    "WHERE user_id = ?";
+            del_stmt = connection.prepareStatement(del_users_script);
+            del_stmt.setInt(1, user_id);
+            del_stmt.executeUpdate();
 
-            String[] delete = { "DELETE FROM user_info WHERE user_id = ?", "DELETE FROM users WHERE user_id = ?",
-                    "DELETE FROM users WHERE attendance = ?" };
-            for (String sql : delete) {
-                delete_rec = connection.prepareStatement(sql);
-                delete_rec.setInt(1, sample);
-                result = delete_rec.executeQuery();
+            String del_info_script = "DELETE FROM user_info " +
+                    "WHERE user_id = ?";
+            del_stmt = connection.prepareStatement(del_info_script);
+            del_stmt.setInt(1, user_id);
+            del_stmt.executeUpdate();
 
-                if (result.next()) {
-                    System.out.println("User deleted successfully!");
-                } else {
-                    System.out.println("No user found with the specified ID.");
-                    isSuccessful = false;
-                }
-            }
-
-        } catch (SQLException e) {
+            String del_attendance_script = "DELETE FROM attendance " +
+                    "WHERE user_id = ?";
+            del_stmt = connection.prepareStatement(del_attendance_script);
+            del_stmt.setInt(1, user_id);
+            del_stmt.executeUpdate();
+        }
+        catch (SQLException e) {
             e.printStackTrace();
             isSuccessful = false;
-
-        } finally {
-            closeThis(delete_rec);
-            closeThis(result);
+        }
+        finally {
+            closeThis(del_stmt);
             closeThis(connection);
         }
         return isSuccessful;
