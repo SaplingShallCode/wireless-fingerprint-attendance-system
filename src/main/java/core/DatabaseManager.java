@@ -265,12 +265,12 @@ public class DatabaseManager {
             find_userID_stmt.setInt(1, attendance_data.getFingerprintID());
             users_result = find_userID_stmt.executeQuery();
 
-            int user_id = 0;
+            int user_id = attendance_data.getFingerprintID();
             if (users_result.next()) {
                 user_id = users_result.getInt("user_id");
             }
 
-            if (user_id != 0) {
+            if (user_id != 0 && checkAttendanceNowExists(user_id, attendance_data.getDateNow())) {
                 // Query the first_name of the attendee in the user_info table based on user_id.
                 String find_userFN_script = "SELECT first_name FROM user_info " +
                         "WHERE user_id = ?";
@@ -284,7 +284,6 @@ public class DatabaseManager {
                     attendance_data.setFirstName(attendee_first_name);
                 }
 
-                /* TODO: check if attendance in the current date already exists. */
                 // Record the attendance.
                 String record_attendance_script = "INSERT INTO attendance (" +
                         "user_id, " +
@@ -638,5 +637,37 @@ public class DatabaseManager {
             closeThis(connection);
         }
         return idExists;
+    }
+
+
+    public boolean checkAttendanceNowExists(int user_id, Date date_now) {
+        boolean alreadyExists = false;
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet result = null;
+        try {
+            connection = openConnection();
+            String query_script = "SELECT * FROM attendance " +
+                    "WHERE user_id = ? " +
+                    "AND date = ?";
+            stmt = connection.prepareStatement(query_script);
+            stmt.setInt(1, user_id);
+            stmt.setDate(2, date_now);
+            result = stmt.executeQuery();
+
+            if (result.next()) {
+                alreadyExists = true;
+            }
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+            alreadyExists = true;
+        }
+        finally {
+            closeThis(stmt);
+            closeThis(result);
+            closeThis(connection);
+        }
+        return alreadyExists;
     }
 }
