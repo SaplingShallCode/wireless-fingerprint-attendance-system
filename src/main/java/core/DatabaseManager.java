@@ -649,6 +649,38 @@ public class DatabaseManager {
     }
 
 
+    public int getUserID(int fingerprint_id, String client_id) {
+        int user_id = 0;
+        Connection connection = null;
+        PreparedStatement query_stmt = null;
+        ResultSet result_set = null;
+        try {
+            connection = openConnection();
+            String query_script = "SELECT user_id FROM users " +
+                    "WHERE fingerprint_id = ? " +
+                    "AND client_id = ?";
+            query_stmt = connection.prepareStatement(query_script);
+            query_stmt.setInt(1, fingerprint_id);
+            query_stmt.setString(2, client_id);
+            result_set = query_stmt.executeQuery();
+
+            if (result_set.next()) {
+                user_id = result_set.getInt("user_id");
+            }
+
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        finally {
+            closeThis(query_stmt);
+            closeThis(result_set);
+            closeThis(connection);
+        }
+        return user_id;
+    }
+
+
     public boolean checkAttendanceNowExists(int user_id, Date date_now) {
         boolean alreadyExists = false;
         Connection connection = null;

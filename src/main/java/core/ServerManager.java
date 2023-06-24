@@ -323,6 +323,29 @@ public class ServerManager implements Runnable {
                                     ));
                                 }
                             }
+                            case "deleteFingerOk" ->
+                                app.sendToConsole(LogHelper.log(
+                                        "Succesfully deleted fingerprint id on client " +
+                                                client_name +
+                                                " with identifier " +
+                                                client_identifier,
+                                        LogTypes.CLIENT
+                                ));
+                            case "deleteFingerFail" ->
+                                app.sendToConsole(LogHelper.log(
+                                        "Failed to delete fingerprint id on client " +
+                                                client_name +
+                                                " with identifier " +
+                                                client_identifier,
+                                        LogTypes.CLIENT
+                                ));
+                            case "deleteAllDataFromDatabase" ->
+                                app.sendToConsole(LogHelper.log(
+                                        String.format(
+                                                "ALL DATA from client %s with id %s is wiped!",
+                                                client_name, client_identifier),
+                                        LogTypes.WARNING
+                                ));
                         }
 
                         // update the time for the heartbeat mechanism

@@ -164,8 +164,14 @@ public class Const {
         DELETE_RECORDS(
                 11,
                 "Delete all records from a specific user from the database. Must use user id",
-                "delete db <user-id>",
+                "delete db <fingerprint-id> <client-name>",
                 "delete db"
+        ),
+        DELETE_CLIENT_DB(
+                12,
+                "[for-debug-only] Empty the database of a client.",
+                "deletealldatafromdatabase <client-name>",
+                "deletealldatafromdatabase"
         );
 
 

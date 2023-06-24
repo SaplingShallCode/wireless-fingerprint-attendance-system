@@ -352,25 +352,72 @@ public class CommandExecutor {
 
 
             case 11 -> {
-                LogHelper.debugLog("Case 10: delete user from db ");
+                LogHelper.debugLog("Case 11: delete user from db ");
 
                 DatabaseManager databaseManager = new DatabaseManager();
                 List<String> input_token = List.of(input.split(" "));
 
+                if (!checkValidServer(app, server_manager))
+                    break; // Server must be running to proceed.
+
                 try {
-                    int user_id = Integer.parseInt(input_token.get(2));
+                    String client_to_find = input_token.get(3);
+                    ServerManager.FSClient client = findClient(app, server_manager, client_to_find);
+
+                    String fingerprint_id_unparsed = input_token.get(2);
+                    int fingerprint_id = Integer.parseInt(fingerprint_id_unparsed);
+                    int user_id = databaseManager.getUserID(fingerprint_id, client.getClientID());
+
+                    if (user_id == 0) {
+                        app.sendToConsole(LogHelper.log(
+                                "User does not exist.",
+                                LogTypes.ERROR));
+                        break;
+                    }
+
                     boolean isSuccessful = databaseManager.deleteUserRecords(user_id);
+
                     if (!isSuccessful) {
                         app.sendToConsole(LogHelper.log(
                                 "Execution failed. Check if database tables exist.",
                                 LogTypes.ERROR));
+                        break;
                     }
+
+                    client.sendCommand("delete");
+                    client.sendCommand(fingerprint_id_unparsed);
                 }
                 catch (IndexOutOfBoundsException iobe) {
                     app.sendToConsole(LogHelper.log("Missing arguments.", LogTypes.INVALID));
                 }
                 catch (NumberFormatException nfe) {
                     app.sendToConsole(LogHelper.log("Invalid Argument Format", LogTypes.INVALID));
+                }
+                catch (NullPointerException npe) {
+                    app.sendToConsole(LogHelper.log("Client does not exist.", LogTypes.ERROR));
+                }
+            }
+
+
+            case 12 -> {
+                LogHelper.debugLog("Case 12: deletealldatafromdatabase");
+
+                List<String> input_token = List.of(input.split(" "));
+
+                if (!checkValidServer(app, server_manager))
+                    break; // Server must be running to proceed.
+
+                try {
+                    String client_to_find = input_token.get(1);
+                    ServerManager.FSClient client = findClient(app, server_manager, client_to_find);
+
+                    client.sendCommand("deleteAllDataFromDatabase");
+                }
+                catch (NullPointerException npe) {
+                    app.sendToConsole(LogHelper.log("Client does not exist.", LogTypes.ERROR));
+                }
+                catch (IndexOutOfBoundsException iobe) {
+                    app.sendToConsole(LogHelper.log("Missing arguments.", LogTypes.INVALID));
                 }
             }
         }
