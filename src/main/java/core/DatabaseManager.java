@@ -270,7 +270,7 @@ public class DatabaseManager {
                 user_id = users_result.getInt("user_id");
             }
 
-            if (user_id != 0 && checkAttendanceNowExists(user_id, attendance_data.getDateNow())) {
+            if (user_id != 0 && !checkAttendanceNowExists(user_id, attendance_data.getDateNow())) {
                 // Query the first_name of the attendee in the user_info table based on user_id.
                 String find_userFN_script = "SELECT first_name FROM user_info " +
                         "WHERE user_id = ?";
