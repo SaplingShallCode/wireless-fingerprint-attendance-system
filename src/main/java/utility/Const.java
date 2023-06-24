@@ -155,7 +155,9 @@ public class Const {
         ),
         SET_EVENT_DATA(
                 10,
-                "Set the new event name and location of the event.",
+                "Set the new event name and location of the event. " +
+                        "multi-word event name and event loc must be" +
+                        "separated by spaces",
                 "event new <name> <location>",
                 "event new"
         );

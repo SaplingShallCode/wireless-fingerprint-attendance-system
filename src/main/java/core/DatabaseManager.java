@@ -431,59 +431,63 @@ public class DatabaseManager {
     }
 
 
-    public List<String> queryAttendanceByEventName() {
+    public List<String> queryAttendanceByEventName(TempExportQueryData exportData) {
         Connection connection = null;
         PreparedStatement stmt = null;
-        ResultSet eventQueryResult = null;
-        List<String> data = new ArrayList<>();
-
-        String event = "Event1";
-        
+        ResultSet event_query_result = null;
+        List<String> data = null;
         try {
             connection = openConnection();
 
             String find_event_script = "SELECT * FROM attendance " +
                     "WHERE event_name = ?";
             stmt = connection.prepareStatement(find_event_script);
-            stmt.setString(1, event);
-            eventQueryResult = stmt.executeQuery();
+            stmt.setString(1, exportData.getEventNameQuery());
+            event_query_result = stmt.executeQuery();
 
+            data = new ArrayList<>();
             data.add("Attendee Name, Date Attended, Time Attended, Event Name, Event Location");
-            while (eventQueryResult.next()) {
-                String row_data;
-                int user_id = eventQueryResult.getInt("user_id");
-                Date date_attended = eventQueryResult.getDate("date_attended");
-                Time time_attended = eventQueryResult.getTime("time_attended");
-                String event_name = eventQueryResult.getString("event_name");
-                String event_loc = eventQueryResult.getString("event_location");
+            if (!event_query_result.next()) {
+                data.add("NO RESULTS FROM SPECIFIED EVENT, 0, 0, 0, 0");
+            }
+            else {
+                do {
+                    String row_data;
+                    int user_id = event_query_result.getInt("user_id");
+                    Date date_attended = event_query_result.getDate("date_attended");
+                    Time time_attended = event_query_result.getTime("time_attended");
+                    String event_name = event_query_result.getString("event_name");
+                    String event_loc = event_query_result.getString("event_location");
 
-                // query the full name from the users table.
-                String user_query_script = "SELECT full_name FROM users " +
-                        "WHERE user_id = ?";
-                PreparedStatement user_query_stmt = connection.prepareStatement(user_query_script);
-                user_query_stmt.setInt(1, user_id);
-                ResultSet user_query_result = user_query_stmt.executeQuery();
+                    // query the full name from the users table.
+                    String user_query_script = "SELECT full_name FROM users " +
+                            "WHERE user_id = ?";
+                    PreparedStatement user_query_stmt = connection.prepareStatement(user_query_script);
+                    user_query_stmt.setInt(1, user_id);
+                    ResultSet user_query_result = user_query_stmt.executeQuery();
 
-                String full_name;
-                if (user_query_result.next()) {
-                    full_name = user_query_result.getString("full_name");
-                } else {
-                    full_name = "NO USER FOUND";
+                    String full_name;
+                    if (user_query_result.next()) {
+                        full_name = user_query_result.getString("full_name");
+                    } else {
+                        full_name = "NO USER FOUND";
+                    }
+
+                    closeThis(user_query_stmt);
+                    closeThis(user_query_result);
+
+                    row_data = String.format(
+                            "%s, %s, %s, %s, %s",
+                            full_name,
+                            date_attended,
+                            time_attended,
+                            event_name,
+                            event_loc
+                    );
+
+                    data.add(row_data);
                 }
-
-                closeThis(user_query_stmt);
-                closeThis(user_query_result);
-
-                row_data = String.format(
-                        "%s, %s, %s, %s, %s",
-                        full_name,
-                        date_attended,
-                        time_attended,
-                        event_name,
-                        event_loc
-                );
-
-                data.add(row_data);
+                while (event_query_result.next());
             }
         }
         catch (SQLException sqle) {
@@ -491,7 +495,7 @@ public class DatabaseManager {
         }
         finally {
             closeThis(stmt);
-            closeThis(eventQueryResult);
+            closeThis(event_query_result);
             closeThis(connection);
         }
         return data;
