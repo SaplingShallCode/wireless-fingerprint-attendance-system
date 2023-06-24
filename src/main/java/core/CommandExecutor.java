@@ -349,6 +349,30 @@ public class CommandExecutor {
                     app.sendToConsole(LogHelper.log("Missing arguments.", LogTypes.INVALID));
                 }
             }
+
+
+            case 11 -> {
+                LogHelper.debugLog("Case 10: delete user from db ");
+
+                DatabaseManager databaseManager = new DatabaseManager();
+                List<String> input_token = List.of(input.split(" "));
+
+                try {
+                    int user_id = Integer.parseInt(input_token.get(2));
+                    boolean isSuccessful = databaseManager.deleteUserRecords(user_id);
+                    if (!isSuccessful) {
+                        app.sendToConsole(LogHelper.log(
+                                "Execution failed. Check if database tables exist.",
+                                LogTypes.ERROR));
+                    }
+                }
+                catch (IndexOutOfBoundsException iobe) {
+                    app.sendToConsole(LogHelper.log("Missing arguments.", LogTypes.INVALID));
+                }
+                catch (NumberFormatException nfe) {
+                    app.sendToConsole(LogHelper.log("Invalid Argument Format", LogTypes.INVALID));
+                }
+            }
         }
     }
 }

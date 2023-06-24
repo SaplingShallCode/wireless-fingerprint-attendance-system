@@ -160,6 +160,12 @@ public class Const {
                         "separated by spaces",
                 "event new <name> <location>",
                 "event new"
+        ),
+        DELETE_RECORDS(
+                11,
+                "Delete all records from a specific user from the database. Must use user id",
+                "delete db <user-id>",
+                "delete db"
         );
 
 
