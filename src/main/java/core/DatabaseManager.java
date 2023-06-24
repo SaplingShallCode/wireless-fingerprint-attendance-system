@@ -113,6 +113,7 @@ public class DatabaseManager {
                     "user_id serial NOT NULL PRIMARY KEY, " +
                     "full_name text NOT NULL, " +
                     "fingerprint_id integer NOT NULL, " +
+                    "client_id text NOT NULL," +
                     "UNIQUE (fingerprint_id)" +
                     ")";
 
@@ -185,11 +186,13 @@ public class DatabaseManager {
             // Inserting record to the users table.
             String users_record = "INSERT INTO users (" +
                     "full_name, " +
-                    "fingerprint_id) " +
-                    "VALUES (?, ?)";
+                    "fingerprint_id," +
+                    "client_id) " +
+                    "VALUES (?, ?, ?)";
             users_stmt = connection.prepareStatement(users_record);
             users_stmt.setString(1, enrollee_data.getFullName());
             users_stmt.setInt(2, enrollee_data.getFingerprintId());
+            users_stmt.setString(3, enrollee_data.getClientID());
 
             users_stmt.executeUpdate();
 
@@ -197,10 +200,12 @@ public class DatabaseManager {
             // get the user_id of the recently added user in the users table.
             String get_user_id = "SELECT user_id FROM users " +
                     "WHERE full_name = ? " +
-                    "AND fingerprint_id = ?";
+                    "AND fingerprint_id = ? " +
+                    "AND client_id = ?";
             get_user_id_stmt = connection.prepareStatement(get_user_id);
             get_user_id_stmt.setString(1, enrollee_data.getFullName());
             get_user_id_stmt.setInt(2, enrollee_data.getFingerprintId());
+            get_user_id_stmt.setString(3, enrollee_data.getClientID());
             result = get_user_id_stmt.executeQuery();
             int user_id = 0;
             if (result.next()) {
@@ -260,9 +265,11 @@ public class DatabaseManager {
 
             // Find a users record based on the fingerprint_id.
             String find_userID_script = "SELECT user_id FROM users " +
-                    "WHERE fingerprint_id = ?";
+                    "WHERE fingerprint_id = ? " +
+                    "AND client_id = ?";
             find_userID_stmt = connection.prepareStatement(find_userID_script);
             find_userID_stmt.setInt(1, attendance_data.getFingerprintID());
+            find_userID_stmt.setString(2, attendance_data.getClientID());
             users_result = find_userID_stmt.executeQuery();
 
             int user_id = attendance_data.getFingerprintID();
@@ -610,7 +617,7 @@ public class DatabaseManager {
     }
 
 
-    public boolean checkFingerIDExists(int fingerprint_id) {
+    public boolean checkFingerIDExists(int fingerprint_id, String client_id) {
         boolean idExists = false;
         Connection connection = null;
         PreparedStatement query_stmt = null;
@@ -618,9 +625,11 @@ public class DatabaseManager {
         try {
             connection = openConnection();
             String query_script = "SELECT * FROM users " +
-                    "WHERE fingerprint_id = ?";
+                    "WHERE fingerprint_id = ? " +
+                    "AND client_id = ?";
             query_stmt = connection.prepareStatement(query_script);
             query_stmt.setInt(1, fingerprint_id);
+            query_stmt.setString(2, client_id);
             result_set = query_stmt.executeQuery();
 
             if (result_set.next()) {
@@ -649,7 +658,7 @@ public class DatabaseManager {
             connection = openConnection();
             String query_script = "SELECT * FROM attendance " +
                     "WHERE user_id = ? " +
-                    "AND date = ?";
+                    "AND date_attended = ?";
             stmt = connection.prepareStatement(query_script);
             stmt.setInt(1, user_id);
             stmt.setDate(2, date_now);

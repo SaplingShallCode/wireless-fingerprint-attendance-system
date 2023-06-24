@@ -133,7 +133,7 @@ public class CommandExecutor {
                     String client_to_find = input_token.get(1);
                     ServerManager.FSClient client = findClient(app, server_manager, client_to_find);
 
-                    EnrollWindow enroll_window = app.getEnrollWindow();
+                    EnrollWindow enroll_window = app.getEnrollWindow(client.getClientID());
                     if (!enroll_window.getIsSubmitted())
                         break; // Must click enroll window submit button to proceed.
 

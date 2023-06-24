@@ -18,6 +18,7 @@ import utility.Const;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class EnrollWindow {
+    private final String client_id;
     private final Stage enroll_stage;
     private Scene main_scene;
 
@@ -64,8 +65,9 @@ public class EnrollWindow {
     private final DatabaseManager database_manager;
 
 
-    public EnrollWindow(Stage stage) {
+    public EnrollWindow(Stage stage, String client_id) {
         database_manager = new DatabaseManager();
+        this.client_id = client_id;
         isSubmitted = false;
         enroll_stage = stage;
         enroll_stage.setAlwaysOnTop(true);
@@ -149,7 +151,7 @@ public class EnrollWindow {
             );
             if (validInput) {
                 int fingerprint_id = Integer.parseInt(fingerprint_id_unparsed);
-                valid_fingerprint_id = !database_manager.checkFingerIDExists(fingerprint_id);
+                valid_fingerprint_id = !database_manager.checkFingerIDExists(fingerprint_id, client_id);
             }
             updateButtonState();
         });

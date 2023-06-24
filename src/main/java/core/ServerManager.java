@@ -134,6 +134,7 @@ public class ServerManager implements Runnable {
      * runs in a new thread created by the server.
      */
     public class FSClient extends Thread {
+        private String client_identifier;
         private final Socket client_socket;
         private BufferedReader input;
         private BufferedWriter output;
@@ -183,6 +184,7 @@ public class ServerManager implements Runnable {
                 ));
                 // connect input and output streams for communication and send feedback to the client
                 setIO();
+                client_identifier = input.readLine();
 
                 // The client mainloop.
                 String message;
@@ -248,7 +250,7 @@ public class ServerManager implements Runnable {
                                 TempEnrollmentData enrollee_data = new TempEnrollmentData();
                                 enrollee_data.buildEnrolleeName(first_name, middle_name, last_name);
                                 enrollee_data.buildEnrolleeInfo(age, gender, phone_number, address);
-                                enrollee_data.setFingerprintId(finger_id_unparsed);
+                                enrollee_data.setFingerprintId(finger_id_unparsed, client_identifier);
 
                                 DatabaseManager database_manager = new DatabaseManager();
                                 boolean isSuccessful = database_manager.enrollUser(enrollee_data);
@@ -294,7 +296,8 @@ public class ServerManager implements Runnable {
                                 attendance_data.buildAttendanceData(
                                         finger_id_unparsed,
                                         event_data.getCurrentEventName(),
-                                        event_data.getCurrentEventLocation()
+                                        event_data.getCurrentEventLocation(),
+                                        client_identifier
                                 );
                                 boolean isSuccessful = database_manager.recordAttendance(attendance_data);
 
@@ -315,7 +318,8 @@ public class ServerManager implements Runnable {
                                 else {
                                     sendCommand("FAIL");
                                     app.sendToConsole(LogHelper.log(
-                                            "An exception occurred when creating attendance record", LogTypes.ERROR
+                                            "An exception occurred when creating attendance record." +
+                                                    "Maybe the record exists in the database.", LogTypes.ERROR
                                     ));
                                 }
                             }
@@ -360,6 +364,11 @@ public class ServerManager implements Runnable {
 
         public String getClientName() {
             return client_name;
+        }
+
+
+        public String getClientID() {
+            return client_identifier;
         }
 
 

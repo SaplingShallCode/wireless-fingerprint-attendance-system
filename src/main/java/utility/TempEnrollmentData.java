@@ -6,6 +6,7 @@ package utility;
 public class TempEnrollmentData {
     private String full_name;
     private Integer fingerprint_id;
+    private String client_id;
 
     private String first_name;
     private String middle_name;
@@ -48,6 +49,8 @@ public class TempEnrollmentData {
         return address;
     }
 
+    public String getClientID() { return client_id; }
+
     public void buildEnrolleeName(String first_name, String middle_name, String last_name) {
         this.first_name = first_name;
         this.middle_name = middle_name;
@@ -62,7 +65,8 @@ public class TempEnrollmentData {
         this.address = address;
     }
 
-    public void setFingerprintId(String fingerprint_id) {
+    public void setFingerprintId(String fingerprint_id, String client_id) {
         this.fingerprint_id = Integer.parseInt(fingerprint_id);
+        this.client_id = client_id;
     }
 }

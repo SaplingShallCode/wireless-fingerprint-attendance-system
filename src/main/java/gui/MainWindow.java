@@ -370,8 +370,8 @@ public class MainWindow extends Application {
      * @return a new EnrollWindow instance.
      * @see CommandExecutor
      */
-    public EnrollWindow getEnrollWindow() {
-        return new EnrollWindow(new Stage());
+    public EnrollWindow getEnrollWindow(String client_id) {
+        return new EnrollWindow(new Stage(), client_id);
     }
 
 

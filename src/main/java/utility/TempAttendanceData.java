@@ -16,6 +16,7 @@ public class TempAttendanceData {
     private String event_name;
     private String event_location;
     private String first_name;
+    private String client_id;
 
 
     public Integer getFingerprintID() {
@@ -42,15 +43,18 @@ public class TempAttendanceData {
         return first_name;
     }
 
+    public String getClientID() { return client_id; }
+
     public void setFirstName(String first_name) {
         this.first_name = first_name;
     }
 
-    public void buildAttendanceData(String fingerprint_id, String event_name, String event_location) {
+    public void buildAttendanceData(String fingerprint_id, String event_name, String event_location, String client_id) {
         this.fingerprint_id = Integer.parseInt(fingerprint_id);
         this.date_now = Date.valueOf(LocalDate.now());
         this.time_now = Time.valueOf(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
         this.event_name = event_name;
         this.event_location = event_location;
+        this.client_id = client_id;
     }
 }
