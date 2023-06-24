@@ -358,7 +358,7 @@ public class DatabaseManager {
         return isSuccessful;
     }
 
-    // TODO: get a list of records based on a specific date (csv format)
+
     public List<String> queryAttendanceByDate(TempExportQueryData export_data) {
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -430,7 +430,6 @@ public class DatabaseManager {
         return data;
     }
 
-    // TODO: get a list of records based on a specific event (csv format)
 
     public List<String> queryAttendanceByEventName() {
         Connection connection = null;
@@ -499,8 +498,6 @@ public class DatabaseManager {
     }
 
 
-    // TODO: get a list of all users enrolled (csv format)
-    
     public List<String> queryAllUsers() {
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -540,7 +537,7 @@ public class DatabaseManager {
         return data;
     }
 
-    // TODO: get a list of all attendance data (csv format)
+
     public List<String> queryAllAttendanceData() {
         Connection connection = null;
         PreparedStatement stmt = null;
