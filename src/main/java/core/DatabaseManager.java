@@ -505,37 +505,38 @@ public class DatabaseManager {
     public List<String> queryAllUsers() {
         Connection connection = null;
         PreparedStatement stmt = null;
-        ResultSet userQueryResult = null;
-        List<String> data = new ArrayList<>();
+        ResultSet user_query_result = null;
+        List<String> data = null;
         try {
             connection = openConnection();
 
             String find_users_script = "SELECT * FROM users";
             stmt = connection.prepareStatement(find_users_script);
-            userQueryResult = stmt.executeQuery();
+            user_query_result = stmt.executeQuery();
 
-            data.add("User ID, Full Name, Email");
-
-            while (userQueryResult.next()) {
-
-                int user_id = userQueryResult.getInt("user_id");
-                String full_name = userQueryResult.getString("full_name");
-                String email = userQueryResult.getString("email");
-
-                String row_data = String.format(
-                        "%d, %s, %s",
-                        user_id,
-                        full_name,
-                        email
-                );
-                data.add(row_data);
-
+            data = new ArrayList<>();
+            data.add("USERS ENROLLED");
+            if (!user_query_result.next()) {
+                data.add("NO ENROLLED USERS");
             }
-        } catch (SQLException sqle) {
+            else {
+                do {
+                    String full_name = user_query_result.getString("full_name");
+                    String row_data = String.format(
+                            "%s",
+                            full_name
+                    );
+                    data.add(row_data);
+                }
+                while (user_query_result.next());
+            }
+        }
+        catch (SQLException sqle) {
             sqle.printStackTrace();
-        } finally {
+        }
+        finally {
             closeThis(stmt);
-            closeThis(userQueryResult);
+            closeThis(user_query_result);
             closeThis(connection);
         }
         return data;

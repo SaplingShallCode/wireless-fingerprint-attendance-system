@@ -281,7 +281,15 @@ public class CommandExecutor {
                             String filename = Exporter.buildAttendanceCSV(event_name, data);
                             app.sendToConsole(LogHelper.log("Export: " + filename, LogTypes.INFO));
                         }
-                        case "all_users" -> {/* TODO: export all users  */ }
+                        case "all_users" -> {
+                            data = databaseManager.queryAllUsers();
+
+                            if (data == null)
+                                throw new NullPointerException();
+
+                            String filename = Exporter.buildAttendanceCSV("all-users", data);
+                            app.sendToConsole(LogHelper.log("Export: " + filename, LogTypes.INFO));
+                        }
                         case "all_attendance" -> {/* TODO: export all attendance data */}
                         default -> {
                             app.sendToConsole(LogHelper.log("Invalid syntax.", LogTypes.INVALID));
