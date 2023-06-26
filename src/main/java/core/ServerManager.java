@@ -201,9 +201,8 @@ public class ServerManager implements Runnable {
                     if (timeDifference >= Const.DISCON_THRESHOLD) {
                         if (!(timeDifference >= Const.DISCON_THRESHOLD * 2)) {
                             app.sendToConsole(LogHelper.log(
-                                    String.format("No response from client %s in %dms" ,
-                                            client_name,
-                                            Const.DISCON_THRESHOLD),
+                                    String.format("No response from client %s in a set amount of time." ,
+                                            client_name),
                                     LogTypes.WARNING
                             ));
                             disconnect();
@@ -222,7 +221,7 @@ public class ServerManager implements Runnable {
                                 // part of heartbeat mechanism
                                 responseTime = System.currentTimeMillis();
                                 app.sendToConsole(LogHelper.log(
-                                        String.format("client %s response time %dms",
+                                        String.format("client=%s    rt=%dms",
                                                 client_name,
                                                 (responseTime - currentMillisTime)),
                                         LogTypes.SERVER
