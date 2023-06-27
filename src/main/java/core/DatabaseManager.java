@@ -711,4 +711,26 @@ public class DatabaseManager {
         }
         return alreadyExists;
     }
+
+
+    public boolean tableExist(String tableName) {
+        boolean tExists = false;
+        Connection connection = null;
+        ResultSet result = null;
+        try {
+            connection = openConnection();
+            result = connection.getMetaData().getTables(null, null, tableName, null);
+            if (result.next()) {
+                tExists = true;
+            }
+        }
+        catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+        finally {
+            closeThis(result);
+            closeThis(connection);
+        }
+        return tExists;
+    }
 }

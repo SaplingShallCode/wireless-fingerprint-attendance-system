@@ -125,6 +125,15 @@ public class CommandExecutor {
             case 3 -> {
                 LogHelper.debugLog("Case 3: enroll");
                 List<String> input_token = List.of(input.split(" "));
+                DatabaseManager databaseManager = new DatabaseManager();
+
+
+                if (!databaseManager.tableExist("users")) {
+                    app.sendToConsole(LogHelper.log(
+                            "Database tables does not exist.", LogTypes.ERROR
+                    ));
+                    break;
+                }
 
                 if (!checkValidServer(app, server_manager))
                     break; // Server must be running to proceed.
